@@ -2,7 +2,6 @@ package com.example.android.talktime.ui;
 
 import android.media.AudioManager;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -21,9 +20,12 @@ import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class CallScreenActivity extends BaseActivity {
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import timber.log.Timber;
 
-    static final String TAG = CallScreenActivity.class.getSimpleName();
+// Sinch code
+public class CallScreenActivity extends BaseActivity {
 
     private AudioPlayer mAudioPlayer;
     private Timer mTimer;
@@ -31,9 +33,14 @@ public class CallScreenActivity extends BaseActivity {
 
     private String mCallId;
 
-    private TextView mCallDuration;
-    private TextView mCallState;
-    private TextView mCallerName;
+    @BindView(R.id.callDuration)
+    TextView mCallDuration;
+    @BindView(R.id.callState)
+    TextView mCallState;
+    @BindView(R.id.remoteUser)
+    TextView mCallerName;
+    @BindView(R.id.hangupButton)
+    Button mEndCallButton;
 
     private class UpdateCallDurationTask extends TimerTask {
 
@@ -52,14 +59,12 @@ public class CallScreenActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_call_screen);
+        ButterKnife.bind(this);
 
+        Timber.plant(new Timber.DebugTree());
         mAudioPlayer = new AudioPlayer(this);
-        mCallDuration = (TextView) findViewById(R.id.callDuration);
-        mCallerName = (TextView) findViewById(R.id.remoteUser);
-        mCallState = (TextView) findViewById(R.id.callState);
-        Button endCallButton = (Button) findViewById(R.id.hangupButton);
 
-        endCallButton.setOnClickListener(new View.OnClickListener() {
+        mEndCallButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 endCall();
@@ -76,7 +81,7 @@ public class CallScreenActivity extends BaseActivity {
             mCallerName.setText(call.getRemoteUserId());
             mCallState.setText(call.getState().toString());
         } else {
-            Log.e(TAG, "Started with invalid callId, aborting.");
+            Timber.e("Started with invalid callId, aborting.");
             finish();
         }
     }
@@ -128,7 +133,7 @@ public class CallScreenActivity extends BaseActivity {
         @Override
         public void onCallEnded(Call call) {
             CallEndCause cause = call.getDetails().getEndCause();
-            Log.d(TAG, "Call ended. Reason: " + cause.toString());
+            Timber.d("Call ended. Reason: " + cause.toString());
             mAudioPlayer.stopProgressTone();
             setVolumeControlStream(AudioManager.USE_DEFAULT_STREAM_TYPE);
             String endMsg = "Call ended: " + call.getDetails().toString();
@@ -138,7 +143,7 @@ public class CallScreenActivity extends BaseActivity {
 
         @Override
         public void onCallEstablished(Call call) {
-            Log.d(TAG, "Call established");
+            Timber.d("Call established");
             mAudioPlayer.stopProgressTone();
             mCallState.setText(call.getState().toString());
             setVolumeControlStream(AudioManager.STREAM_VOICE_CALL);
@@ -146,7 +151,7 @@ public class CallScreenActivity extends BaseActivity {
 
         @Override
         public void onCallProgressing(Call call) {
-            Log.d(TAG, "Call progressing");
+            Timber.d("Call progressing");
             mAudioPlayer.playProgressTone();
         }
 

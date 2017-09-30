@@ -44,5 +44,12 @@
     <string name="btn_sign_out">Sign Out</string>
     <string name="lbl_forgot_password">Forgot password?</string>
     <string name="forgot_password_msg">We just need your registered Email Id to sent you password reset instructions.</string>
+    <string name="mic_permission_required">This application needs permission to use your microphone to function properly.</string>
+    <string name="may_answer_call_now">You may now answer the call</string>
+    <string name="enter_email_toast">Enter email address!</string>
+    <string name="enter_pass_toast">Enter password!</string>
+    <string name="enter_registered_email_toast">Enter your registered email id</string>
+    <string name="pass_reset_instructions_sent_toast">Instructions to reset your password have been sent to your email</string>
+    <string name="failed_send_reset_pass_email_pass">Failed to send reset email</string>
 
 </resources>

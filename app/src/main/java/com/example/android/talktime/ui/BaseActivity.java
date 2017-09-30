@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.example.android.talktime.CallService;
 
+    // Sinch code
 public class BaseActivity extends AppCompatActivity implements ServiceConnection{
 
     private CallService.CallServiceInterface mCallServiceInterface;

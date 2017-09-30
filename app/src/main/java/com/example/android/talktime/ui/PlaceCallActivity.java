@@ -15,6 +15,8 @@ import com.example.android.talktime.R;
 import com.sinch.android.rtc.MissingPermissionException;
 import com.sinch.android.rtc.calling.Call;
 
+
+// TODO Havent refactored as whole activity needs to be changed
 public class PlaceCallActivity extends BaseActivity {
 
 

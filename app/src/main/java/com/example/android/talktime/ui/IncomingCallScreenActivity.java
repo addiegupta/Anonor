@@ -21,21 +21,33 @@ import com.sinch.android.rtc.calling.CallListener;
 
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import timber.log.Timber;
+
 public class IncomingCallScreenActivity extends BaseActivity {
 
     static final String TAG = IncomingCallScreenActivity.class.getSimpleName();
     private String mCallId;
     private AudioPlayer mAudioPlayer;
 
+    @BindView(R.id.answerButton)
+    Button mAnswerButton;
+    @BindView(R.id.declineButton)
+    Button mDeclineButton;
+    @BindView(R.id.remoteUser)
+    TextView mTVRemoteUser;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_incoming_call_screen);
 
-        Button answer = (Button) findViewById(R.id.answerButton);
-        answer.setOnClickListener(mClickListener);
-        Button decline = (Button) findViewById(R.id.declineButton);
-        decline.setOnClickListener(mClickListener);
+        ButterKnife.bind(this);
+        Timber.plant(new Timber.DebugTree());
+
+        mAnswerButton.setOnClickListener(mClickListener);
+        mDeclineButton.setOnClickListener(mClickListener);
 
         mAudioPlayer = new AudioPlayer(this);
         mAudioPlayer.playRingtone();
@@ -47,8 +59,8 @@ public class IncomingCallScreenActivity extends BaseActivity {
         Call call = getSinchServiceInterface().getCall(mCallId);
         if (call != null) {
             call.addCallListener(new SinchCallListener());
-            TextView remoteUser = (TextView) findViewById(R.id.remoteUser);
-            remoteUser.setText(call.getRemoteUserId());
+
+            mTVRemoteUser.setText(call.getRemoteUserId());
         } else {
             Log.e(TAG, "Started with invalid callId, aborting");
             finish();
@@ -74,9 +86,9 @@ public class IncomingCallScreenActivity extends BaseActivity {
 
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            Toast.makeText(this, "You may now answer the call", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, getString(R.string.may_answer_call_now), Toast.LENGTH_LONG).show();
         } else {
-            Toast.makeText(this, "This application needs permission to use your microphone to function properly.", Toast
+            Toast.makeText(this,getString(R.string.mic_permission_required), Toast
                     .LENGTH_LONG).show();
         }
     }
@@ -95,19 +107,20 @@ public class IncomingCallScreenActivity extends BaseActivity {
         @Override
         public void onCallEnded(Call call) {
             CallEndCause cause = call.getDetails().getEndCause();
-            Log.d(TAG, "Call ended, cause: " + cause.toString());
+            Timber.d("Call ended, cause: " + cause.toString());
             mAudioPlayer.stopRingtone();
             finish();
         }
 
         @Override
         public void onCallEstablished(Call call) {
-            Log.d(TAG, "Call established");
+            Timber.d("Call established");
         }
 
         @Override
         public void onCallProgressing(Call call) {
-            Log.d(TAG, "Call progressing");
+            Timber.d("Call progressing");
+
         }
 
         @Override
