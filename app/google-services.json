@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "665271254197-3qt3lcn0dau84bph3m5c4t3k1ce8q3ae.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.android.talktime",
+            "certificate_hash": "da6ab1685c1eac8182e2d546afea4a8369a0f636"
+          }
+        },
+        {
           "client_id": "665271254197-9p7dpgtjb1g7aph864bl6nkkitprud0q.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -29,8 +37,13 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "665271254197-9p7dpgtjb1g7aph864bl6nkkitprud0q.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         },
         "ads_service": {
           "status": 2
