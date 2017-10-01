@@ -20,6 +20,7 @@
             android:layout_height="@dimen/logo_w_h"
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="30dp"
+            android:contentDescription="@string/cd_app_logo"
             android:src="@mipmap/ic_launcher" />
 
         <android.support.design.widget.TextInputLayout
@@ -33,7 +34,6 @@
                 android:hint="@string/email"
                 android:inputType="textEmailAddress"
                 android:maxLines="1"
-                android:singleLine="true"
                 android:textColor="@android:color/white" />
 
         </android.support.design.widget.TextInputLayout>
@@ -52,10 +52,33 @@
                 android:imeOptions="actionUnspecified"
                 android:inputType="textPassword"
                 android:maxLines="1"
-                android:singleLine="true"
                 android:textColor="@android:color/white" />
 
         </android.support.design.widget.TextInputLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:text="@string/type_of_caller"
+                android:textSize="18sp" />
+
+            <Spinner
+                android:id="@+id/spinner_type_of_caller_signup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"
+                android:drawSelectorOnTop="true"
+                android:entries="@array/signup_caller_spinner_array"
+                android:padding="8dp"
+                android:spinnerMode="dropdown" />
+        </LinearLayout>
 
         <Button
             android:id="@+id/sign_up_button"

@@ -97,8 +97,7 @@ public class MainActivity extends BaseActivity implements CallService.StartFaile
 
     private void selectCaller(DataSnapshot dataSnapshot) {
 
-        //TODO Change callers to receivers
-        DataSnapshot list = dataSnapshot.child("callers");
+        DataSnapshot list = dataSnapshot.child("receivers");
         int dbSize = (int) list.getChildrenCount();
 
         //TODO Optimise for memory

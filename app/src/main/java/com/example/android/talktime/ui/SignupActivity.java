@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.example.android.talktime.R;
@@ -42,6 +43,8 @@ public class SignupActivity extends AppCompatActivity {
     ProgressBar mPBLoadingIndicator;
     @BindView(R.id.btn_reset_password)
     Button mButtonResetPass;
+    @BindView(R.id.spinner_type_of_caller_signup)
+    Spinner mSpinnerTypeOfCaller;
 
     private FirebaseAuth mAuth;
     private FirebaseDatabase mUserDatabase;
@@ -125,11 +128,17 @@ public class SignupActivity extends AppCompatActivity {
                                             Toast.LENGTH_SHORT).show();
                                 } else {
 
+                                    String typeOfCaller = mSpinnerTypeOfCaller.getSelectedItem().toString();
                                     //TODO Update for recievers as well
-
                                     User user = new User(email, 0);
                                     String uniqueUserId = mAuth.getCurrentUser().getUid();
-                                    mDBRef.child("callers").child(uniqueUserId).setValue(user);
+
+                                    if (typeOfCaller.equals(getString(R.string.caller))) {
+
+                                        mDBRef.child("callers").child(uniqueUserId).setValue(user);
+                                    } else if (typeOfCaller.equals(getString(R.string.receiver))) {
+                                        mDBRef.child("receivers").child(uniqueUserId).setValue(user);
+                                    }
 
                                     startActivity(new Intent(SignupActivity.this, MainActivity.class));
                                     finish();

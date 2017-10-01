@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="signup_caller_spinner_array">
+        <item>@string/caller</item>
+        <item>@string/receiver</item>
+    </string-array>
+</resources>

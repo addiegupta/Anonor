@@ -51,5 +51,9 @@
     <string name="enter_registered_email_toast">Enter your registered email id</string>
     <string name="pass_reset_instructions_sent_toast">Instructions to reset your password have been sent to your email</string>
     <string name="failed_send_reset_pass_email_pass">Failed to send reset email</string>
+    <string name="type_of_caller">Type of Caller</string>
+    <string name="cd_app_logo">Logo of the App</string>
+    <string name="caller">Caller</string>
+    <string name="receiver">Receiver</string>
 
 </resources>
