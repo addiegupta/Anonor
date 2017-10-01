@@ -16,10 +16,6 @@ import com.sinch.android.rtc.calling.Call;
 import com.sinch.android.rtc.calling.CallClient;
 import com.sinch.android.rtc.calling.CallClientListener;
 
-/**
- * Created by addie on 27-09-2017.
- */
-
 public class CallService extends Service {
 
     // Unique API key
@@ -85,10 +81,6 @@ public class CallService extends Service {
     }
 
     public class CallServiceInterface extends Binder {
-
-        public Call callPhoneNumber(String phoneNumber) {
-            return mSinchClient.getCallClient().callPhoneNumber(phoneNumber);
-        }
 
         public Call callUser(String userId) {
             if (mSinchClient == null) {

@@ -24,6 +24,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
 
 public class SignupActivity extends AppCompatActivity {
 
@@ -51,7 +52,7 @@ public class SignupActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
-
+        ButterKnife.bind(this);
         //Get Firebase mAuth instance
         mAuth = FirebaseAuth.getInstance();
         mUserDatabase = FirebaseDatabase.getInstance();
@@ -84,7 +85,7 @@ public class SignupActivity extends AppCompatActivity {
                 }
 
                 if (TextUtils.isEmpty(password)) {
-                    Toast.makeText(getApplicationContext(),getString(R.string.enter_pass_toast), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), getString(R.string.enter_pass_toast), Toast.LENGTH_SHORT).show();
                     return;
                 }
 
@@ -126,7 +127,7 @@ public class SignupActivity extends AppCompatActivity {
 
                                     //TODO Update for recievers as well
 
-                                    User user = new User(email,0);
+                                    User user = new User(email, 0);
                                     String uniqueUserId = mAuth.getCurrentUser().getUid();
                                     mDBRef.child("callers").child(uniqueUserId).setValue(user);
 

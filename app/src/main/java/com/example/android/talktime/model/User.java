@@ -4,6 +4,9 @@ public class User {
     private String email;
     private long  duration;
 
+    public User(){
+
+    }
     public User(String email, long duration){
         this.email = email;
         this.duration = duration;
