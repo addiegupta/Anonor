@@ -44,8 +44,11 @@ public class MainActivity extends BaseActivity implements CallService.StartFaile
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         ButterKnife.bind(this);
         Timber.plant(new Timber.DebugTree());
+
+        mButtonCallSomeone.setEnabled(false);
 
         mAuth = FirebaseAuth.getInstance();
         mUserDatabase = FirebaseDatabase.getInstance();
@@ -107,6 +110,7 @@ public class MainActivity extends BaseActivity implements CallService.StartFaile
             if (ranNum == i) {
                 userToBeCalled = ds.getValue(User.class);
                 mReceiverId = userToBeCalled.getEmail();
+                mButtonCallSomeone.setEnabled(true);
                 Toast.makeText(this, mReceiverId, Toast.LENGTH_SHORT).show();
                 break;
             }
