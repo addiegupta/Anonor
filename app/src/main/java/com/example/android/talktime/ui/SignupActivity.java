@@ -1,6 +1,8 @@
 package com.example.android.talktime.ui;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -26,8 +28,10 @@ import com.google.firebase.database.ValueEventListener;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import timber.log.Timber;
 
 public class SignupActivity extends AppCompatActivity {
+    private static final String IS_CALLER_KEY = "is_caller";
 
 //TODO Refactor UI elements code using butterknife etc
 
@@ -50,12 +54,17 @@ public class SignupActivity extends AppCompatActivity {
     private FirebaseDatabase mUserDatabase;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private DatabaseReference mDBRef;
+    private static final String SHARED_PREFS_KEY = "shared_prefs";
+    private boolean mIsCaller;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
+
         ButterKnife.bind(this);
+        Timber.plant(new Timber.DebugTree());
+
         //Get Firebase mAuth instance
         mAuth = FirebaseAuth.getInstance();
         mUserDatabase = FirebaseDatabase.getInstance();
@@ -120,6 +129,7 @@ public class SignupActivity extends AppCompatActivity {
                             public void onComplete(@NonNull Task<AuthResult> task) {
                                 Toast.makeText(SignupActivity.this, "createUserWithEmail:onComplete:" + task.isSuccessful(), Toast.LENGTH_SHORT).show();
                                 mPBLoadingIndicator.setVisibility(View.GONE);
+
                                 // If sign in fails, display a message to the user. If sign in succeeds
                                 // the mAuth state listener will be notified and logic to handle the
                                 // signed in user can be handled in the listener.
@@ -128,17 +138,24 @@ public class SignupActivity extends AppCompatActivity {
                                             Toast.LENGTH_SHORT).show();
                                 } else {
 
-                                    String typeOfCaller = mSpinnerTypeOfCaller.getSelectedItem().toString();
-                                    //TODO Update for recievers as well
+
                                     User user = new User(email, 0);
                                     String uniqueUserId = mAuth.getCurrentUser().getUid();
 
-                                    if (typeOfCaller.equals(getString(R.string.caller))) {
+                                    String typeOfUser = mSpinnerTypeOfCaller.getSelectedItem().toString();
 
+                                    if (typeOfUser.equals(getString(R.string.caller))) {
+
+                                        mIsCaller = true;
                                         mDBRef.child("callers").child(uniqueUserId).setValue(user);
-                                    } else if (typeOfCaller.equals(getString(R.string.receiver))) {
+                                    } else if (typeOfUser.equals(getString(R.string.receiver))) {
+                                        mIsCaller = false;
                                         mDBRef.child("receivers").child(uniqueUserId).setValue(user);
                                     }
+
+                                    SharedPreferences prefs = getSharedPreferences(SHARED_PREFS_KEY, Context.MODE_PRIVATE);
+                                    prefs.edit().putBoolean(IS_CALLER_KEY,mIsCaller).apply();
+                                    Timber.d("IsCaller: " + String.valueOf(mIsCaller));
 
                                     startActivity(new Intent(SignupActivity.this, MainActivity.class));
                                     finish();

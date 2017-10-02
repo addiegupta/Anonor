@@ -1,8 +1,11 @@
 package com.example.android.talktime.ui;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.view.View;
 import android.widget.Button;
@@ -29,6 +32,10 @@ import timber.log.Timber;
 
 public class MainActivity extends BaseActivity implements CallService.StartFailedListener {
 
+
+    private static final String IS_CALLER_KEY = "is_caller";
+    private static final String SHARED_PREFS_KEY = "shared_prefs";
+    @Nullable
     @BindView(R.id.btn_main_call_someone)
     Button mButtonCallSomeone;
 
@@ -38,17 +45,34 @@ public class MainActivity extends BaseActivity implements CallService.StartFaile
     private FirebaseAuth.AuthStateListener mAuthListener;
     private DatabaseReference mDBRef;
     private String mReceiverId;
+    private boolean mIsCaller;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        SharedPreferences prefs = getSharedPreferences(SHARED_PREFS_KEY, Context.MODE_PRIVATE);
+        mIsCaller = prefs.getBoolean(IS_CALLER_KEY, true);
+        Timber.d("mIsCaller:" + String.valueOf(mIsCaller));
+        if (mIsCaller) {
+            setContentView(R.layout.activity_main_caller);
+            ButterKnife.bind(this);
+            mButtonCallSomeone.setEnabled(false);
 
-        ButterKnife.bind(this);
+            mButtonCallSomeone.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    callSomeone();
+                }
+            });
+        } else {
+            setContentView(R.layout.activity_main_receiver);
+            ButterKnife.bind(this);
+        }
+
+
         Timber.plant(new Timber.DebugTree());
 
-        mButtonCallSomeone.setEnabled(false);
 
         mAuth = FirebaseAuth.getInstance();
         mUserDatabase = FirebaseDatabase.getInstance();
@@ -60,7 +84,9 @@ public class MainActivity extends BaseActivity implements CallService.StartFaile
             public void onDataChange(DataSnapshot dataSnapshot) {
                 // This method is called once with the initial value and again
                 // whenever data at this location is updated.
-                selectCaller(dataSnapshot);
+                if (mIsCaller) {
+                    selectCaller(dataSnapshot);
+                }
             }
 
             @Override
@@ -74,13 +100,6 @@ public class MainActivity extends BaseActivity implements CallService.StartFaile
             String userName = mAuth.getCurrentUser().getEmail();
             getSinchServiceInterface().startClient(userName);
         }
-
-        mButtonCallSomeone.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                callSomeone();
-            }
-        });
     }
 
 
@@ -146,12 +165,6 @@ public class MainActivity extends BaseActivity implements CallService.StartFaile
         getSinchServiceInterface().setStartListener(this);
     }
 
-    private void stopButtonClicked() {
-        if (getSinchServiceInterface() != null) {
-            getSinchServiceInterface().stopClient();
-        }
-        finish();
-    }
 
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
