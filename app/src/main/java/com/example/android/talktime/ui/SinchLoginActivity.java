@@ -8,12 +8,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.example.android.talktime.CallService;
+import com.example.android.talktime.SinchService;
 import com.example.android.talktime.R;
 import com.sinch.android.rtc.SinchError;
 
 //TODO Havent refactored as whole activity needs to be changed
-public class SinchLoginActivity extends BaseActivity implements CallService.StartFailedListener {
+public class SinchLoginActivity extends BaseActivity implements SinchService.StartFailedListener {
 
 
     private Button mLoginButton;

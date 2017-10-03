@@ -67,6 +67,12 @@ public class SignupActivity extends AppCompatActivity {
 
         //Get Firebase mAuth instance
         mAuth = FirebaseAuth.getInstance();
+
+        if (mAuth.getCurrentUser() != null) {
+            startActivity(new Intent(SignupActivity.this, MainActivity.class));
+            finish();
+        }
+
         mUserDatabase = FirebaseDatabase.getInstance();
         mDBRef = mUserDatabase.getReference();
 
@@ -81,6 +87,8 @@ public class SignupActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 finish();
+                startActivity(new Intent(SignupActivity.this, LoginActivity.class));
+
             }
         });
 

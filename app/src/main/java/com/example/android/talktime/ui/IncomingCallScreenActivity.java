@@ -11,7 +11,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.android.talktime.AudioPlayer;
-import com.example.android.talktime.CallService;
+import com.example.android.talktime.SinchService;
 import com.example.android.talktime.R;
 import com.sinch.android.rtc.MissingPermissionException;
 import com.sinch.android.rtc.PushPair;
@@ -51,7 +51,8 @@ public class IncomingCallScreenActivity extends BaseActivity {
 
         mAudioPlayer = new AudioPlayer(this);
         mAudioPlayer.playRingtone();
-        mCallId = getIntent().getStringExtra(CallService.CALL_ID);
+        mCallId = getIntent().getStringExtra(SinchService.CALL_ID);
+        Timber.d(mCallId);
     }
 
     @Override
@@ -74,7 +75,7 @@ public class IncomingCallScreenActivity extends BaseActivity {
             try {
                 call.answer();
                 Intent intent = new Intent(this, CallScreenActivity.class);
-                intent.putExtra(CallService.CALL_ID, mCallId);
+                intent.putExtra(SinchService.CALL_ID, mCallId);
                 startActivity(intent);
             } catch (MissingPermissionException e) {
                 ActivityCompat.requestPermissions(this, new String[]{e.getRequiredPermission()}, 0);

@@ -10,7 +10,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.android.talktime.CallService;
+import com.example.android.talktime.SinchService;
 import com.example.android.talktime.R;
 import com.sinch.android.rtc.MissingPermissionException;
 import com.sinch.android.rtc.calling.Call;
@@ -68,7 +68,7 @@ public class PlaceCallActivity extends BaseActivity {
             }
             String callId = call.getCallId();
             Intent callScreen = new Intent(this, CallScreenActivity.class);
-            callScreen.putExtra(CallService.CALL_ID, callId);
+            callScreen.putExtra(SinchService.CALL_ID, callId);
             startActivity(callScreen);
         } catch (MissingPermissionException e) {
             ActivityCompat.requestPermissions(this, new String[]{e.getRequiredPermission()}, 0);

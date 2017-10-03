@@ -16,7 +16,7 @@ import com.sinch.android.rtc.calling.Call;
 import com.sinch.android.rtc.calling.CallClient;
 import com.sinch.android.rtc.calling.CallClientListener;
 
-public class CallService extends Service {
+public class SinchService extends Service {
 
     // Unique API key
     private static final String APP_KEY = "f943887a-b801-421b-bdc9-6fd83bda6511";
@@ -24,9 +24,9 @@ public class CallService extends Service {
     private static final String ENVIRONMENT = "clientapi.sinch.com";
 
     public static final String CALL_ID = "CALL_ID";
-    static final String TAG = CallService.class.getSimpleName();
+    static final String TAG = SinchService.class.getSimpleName();
 
-    private CallServiceInterface mCallServiceInterface = new CallServiceInterface();
+    private SinchServiceInterface mSinchServiceInterface = new SinchServiceInterface();
     private SinchClient mSinchClient;
     private String mUserId;
 
@@ -77,10 +77,10 @@ public class CallService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
-        return mCallServiceInterface;
+        return mSinchServiceInterface;
     }
 
-    public class CallServiceInterface extends Binder {
+    public class SinchServiceInterface extends Binder {
 
         public Call callUser(String userId) {
             if (mSinchClient == null) {
@@ -94,7 +94,7 @@ public class CallService extends Service {
         }
 
         public boolean isStarted() {
-            return CallService.this.isStarted();
+            return SinchService.this.isStarted();
         }
 
         public void startClient(String userName) {
@@ -176,10 +176,10 @@ public class CallService extends Service {
         @Override
         public void onIncomingCall(CallClient callClient, Call call) {
             Log.d(TAG, "Incoming call");
-            Intent intent = new Intent(CallService.this, IncomingCallScreenActivity.class);
+            Intent intent = new Intent(SinchService.this, IncomingCallScreenActivity.class);
             intent.putExtra(CALL_ID, call.getCallId());
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            CallService.this.startActivity(intent);
+            SinchService.this.startActivity(intent);
         }
     }
 

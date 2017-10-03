@@ -8,7 +8,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.android.talktime.AudioPlayer;
-import com.example.android.talktime.CallService;
+import com.example.android.talktime.SinchService;
 import com.example.android.talktime.R;
 import com.sinch.android.rtc.PushPair;
 import com.sinch.android.rtc.calling.Call;
@@ -70,7 +70,8 @@ public class CallScreenActivity extends BaseActivity {
                 endCall();
             }
         });
-        mCallId = getIntent().getStringExtra(CallService.CALL_ID);
+        mCallId = getIntent().getStringExtra(SinchService.CALL_ID);
+        Timber.d(mCallId);
     }
 
     @Override

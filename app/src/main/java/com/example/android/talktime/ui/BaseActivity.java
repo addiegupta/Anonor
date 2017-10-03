@@ -7,32 +7,32 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 
-import com.example.android.talktime.CallService;
+import com.example.android.talktime.SinchService;
 
     // Sinch code
 public abstract class BaseActivity extends AppCompatActivity implements ServiceConnection{
 
-    private CallService.CallServiceInterface mCallServiceInterface;
+    private SinchService.SinchServiceInterface mSinchServiceInterface;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getApplicationContext().bindService(new Intent(this, CallService.class), this,
+        getApplicationContext().bindService(new Intent(this, SinchService.class), this,
                 BIND_AUTO_CREATE);
     }
 
     @Override
     public void onServiceConnected(ComponentName name, IBinder iBinder) {
-        if (CallService.class.getName().equals(name.getClassName())) {
-            mCallServiceInterface = (CallService.CallServiceInterface) iBinder;
+        if (SinchService.class.getName().equals(name.getClassName())) {
+            mSinchServiceInterface = (SinchService.SinchServiceInterface) iBinder;
             onServiceConnected();
         }
     }
 
     @Override
     public void onServiceDisconnected(ComponentName componentName) {
-        if (CallService.class.getName().equals(componentName.getClassName())) {
-            mCallServiceInterface = null;
+        if (SinchService.class.getName().equals(componentName.getClassName())) {
+            mSinchServiceInterface = null;
             onServiceDisconnected();
         }
     }
@@ -45,7 +45,7 @@ public abstract class BaseActivity extends AppCompatActivity implements ServiceC
         // for subclasses
     }
 
-    protected CallService.CallServiceInterface getSinchServiceInterface() {
-        return mCallServiceInterface;
+    protected SinchService.SinchServiceInterface getSinchServiceInterface() {
+        return mSinchServiceInterface;
     }
 }

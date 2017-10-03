@@ -11,7 +11,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.example.android.talktime.CallService;
+import com.example.android.talktime.SinchService;
 import com.example.android.talktime.R;
 import com.example.android.talktime.model.User;
 import com.google.firebase.auth.FirebaseAuth;
@@ -30,7 +30,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import timber.log.Timber;
 
-public class MainActivity extends BaseActivity implements CallService.StartFailedListener {
+public class MainActivity extends BaseActivity implements SinchService.StartFailedListener {
 
 
     private static final String IS_CALLER_KEY = "is_caller";
@@ -51,9 +51,17 @@ public class MainActivity extends BaseActivity implements CallService.StartFaile
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         SharedPreferences prefs = getSharedPreferences(SHARED_PREFS_KEY, Context.MODE_PRIVATE);
         mIsCaller = prefs.getBoolean(IS_CALLER_KEY, true);
+
+        mAuth = FirebaseAuth.getInstance();
+        mUserDatabase = FirebaseDatabase.getInstance();
+        mDBRef = mUserDatabase.getReference();
+
+        Timber.plant(new Timber.DebugTree());
         Timber.d("mIsCaller:" + String.valueOf(mIsCaller));
+
         if (mIsCaller) {
             setContentView(R.layout.activity_main_caller);
             ButterKnife.bind(this);
@@ -65,18 +73,11 @@ public class MainActivity extends BaseActivity implements CallService.StartFaile
                     callSomeone();
                 }
             });
+
         } else {
             setContentView(R.layout.activity_main_receiver);
             ButterKnife.bind(this);
         }
-
-
-        Timber.plant(new Timber.DebugTree());
-
-
-        mAuth = FirebaseAuth.getInstance();
-        mUserDatabase = FirebaseDatabase.getInstance();
-        mDBRef = mUserDatabase.getReference();
 
         // Read from the database
         mDBRef.addValueEventListener(new ValueEventListener() {
@@ -95,11 +96,6 @@ public class MainActivity extends BaseActivity implements CallService.StartFaile
             }
         });
 
-
-        if (getSinchServiceInterface() != null && !getSinchServiceInterface().isStarted()) {
-            String userName = mAuth.getCurrentUser().getEmail();
-            getSinchServiceInterface().startClient(userName);
-        }
     }
 
 
@@ -110,9 +106,7 @@ public class MainActivity extends BaseActivity implements CallService.StartFaile
 
     @Override
     public void onStarted() {
-        startCall();
     }
-
 
     private void selectCaller(DataSnapshot dataSnapshot) {
 
@@ -136,23 +130,22 @@ public class MainActivity extends BaseActivity implements CallService.StartFaile
         }
     }
 
+
     private void callSomeone() {
-
-        if (!getSinchServiceInterface().isStarted()) {
-            getSinchServiceInterface().startClient(mReceiverId);
-        } else {
-            startCall();
-        }
-    }
-
-    private void startCall() {
         try {
             Call call = getSinchServiceInterface().callUser(mReceiverId);
 
+            if (call == null) {
+                // Service failed for some reason, show a Toast and abort
+                Toast.makeText(this, "Service is not started. Try stopping the service and starting it again before "
+                        + "placing a call.", Toast.LENGTH_LONG).show();
+                return;
+            }
             String callId = call.getCallId();
-            Intent callScreen = new Intent(this, CallScreenActivity.class);
-            callScreen.putExtra(CallService.CALL_ID, callId);
-            startActivity(callScreen);
+            Intent callScreenActivity = new Intent(this, CallScreenActivity.class);
+            callScreenActivity.putExtra(SinchService.CALL_ID, callId);
+            startActivity(callScreenActivity);
+
         } catch (MissingPermissionException e) {
             ActivityCompat.requestPermissions(this, new String[]{e.getRequiredPermission()}, 0);
         }
@@ -162,7 +155,14 @@ public class MainActivity extends BaseActivity implements CallService.StartFaile
     @Override
     protected void onServiceConnected() {
 
+        Timber.d("onServiceConnected");
         getSinchServiceInterface().setStartListener(this);
+
+        //Register user
+        if (getSinchServiceInterface() != null && !getSinchServiceInterface().isStarted()) {
+            getSinchServiceInterface().startClient(mAuth.getCurrentUser().getEmail());
+            Toast.makeText(MainActivity.this, "Registered as " + mAuth.getCurrentUser().getEmail(), Toast.LENGTH_SHORT).show();
+        }
     }
 
 

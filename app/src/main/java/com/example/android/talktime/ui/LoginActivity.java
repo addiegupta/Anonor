@@ -65,11 +65,6 @@ public class LoginActivity extends AppCompatActivity {
         auth = FirebaseAuth.getInstance();
 
 
-        if (auth.getCurrentUser() != null) {
-            startActivity(new Intent(LoginActivity.this, MainActivity.class));
-            finish();
-        }
-
         mUserDatabase = FirebaseDatabase.getInstance();
         mDBRef = mUserDatabase.getReference();
 
@@ -96,6 +91,7 @@ public class LoginActivity extends AppCompatActivity {
         mButtonSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                finish();
                 startActivity(new Intent(LoginActivity.this, SignupActivity.class));
             }
         });
