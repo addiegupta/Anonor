@@ -34,13 +34,9 @@
         android:theme="@style/AppTheme">
         <service android:name=".SinchService" />
 
-        <activity android:name=".ui.SinchLoginActivity"
-            android:screenOrientation="portrait"/>
         <activity android:name=".ui.CallScreenActivity"
             android:screenOrientation="portrait" />
         <activity android:name=".ui.IncomingCallScreenActivity"
-            android:screenOrientation="portrait" />
-        <activity android:name=".ui.PlaceCallActivity"
             android:screenOrientation="portrait" />
         <activity android:name=".ui.BaseActivity"
             android:screenOrientation="portrait" />
