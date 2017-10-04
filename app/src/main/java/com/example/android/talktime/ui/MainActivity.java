@@ -7,12 +7,14 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.example.android.talktime.SinchService;
 import com.example.android.talktime.R;
+import com.example.android.talktime.SinchService;
 import com.example.android.talktime.model.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -20,10 +22,12 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.sinch.android.rtc.MissingPermissionException;
 import com.sinch.android.rtc.SinchError;
 import com.sinch.android.rtc.calling.Call;
 
+import java.io.IOException;
 import java.util.Random;
 
 import butterknife.BindView;
@@ -96,6 +100,50 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
             }
         });
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        int menuId = item.getItemId();
+
+        switch (menuId) {
+            case R.id.menu_main_action_sign_out:
+                signOutUser();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void signOutUser() {
+
+        //TODO Implement dialog for sign out confirmation
+        SharedPreferences prefs = getSharedPreferences(SHARED_PREFS_KEY, Context.MODE_PRIVATE);
+        prefs.edit().clear().apply();
+
+        //TODO Delete fcm token from database too
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    FirebaseInstanceId.getInstance().deleteInstanceId();
+                    FirebaseInstanceId.getInstance().getToken();
+                    Timber.d(FirebaseInstanceId.getInstance().getToken());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+
+        mAuth.signOut();
+        finish();
+        startActivity(new Intent(MainActivity.this, LoginActivity.class));
     }
 
 

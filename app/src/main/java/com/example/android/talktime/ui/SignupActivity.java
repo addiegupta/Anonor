@@ -32,6 +32,7 @@ import timber.log.Timber;
 
 public class SignupActivity extends AppCompatActivity {
     private static final String IS_CALLER_KEY = "is_caller";
+    private static final String FCM_TOKEN = "fcm_token";
 
 //TODO Refactor UI elements code using butterknife etc
 
@@ -146,10 +147,12 @@ public class SignupActivity extends AppCompatActivity {
                                             Toast.LENGTH_SHORT).show();
                                 } else {
 
+                                    SharedPreferences prefs = getSharedPreferences(SHARED_PREFS_KEY, Context.MODE_PRIVATE);
+                                    //TODO Havent handled token insertion in DB onTokenRefresh
+                                    String fcmToken = prefs.getString(FCM_TOKEN,null);
+                                    User user = new User(email, 0,fcmToken);
 
-                                    User user = new User(email, 0);
                                     String uniqueUserId = mAuth.getCurrentUser().getUid();
-
                                     String typeOfUser = mSpinnerTypeOfCaller.getSelectedItem().toString();
 
                                     if (typeOfUser.equals(getString(R.string.caller))) {
@@ -161,7 +164,6 @@ public class SignupActivity extends AppCompatActivity {
                                         mDBRef.child("receivers").child(uniqueUserId).setValue(user);
                                     }
 
-                                    SharedPreferences prefs = getSharedPreferences(SHARED_PREFS_KEY, Context.MODE_PRIVATE);
                                     prefs.edit().putBoolean(IS_CALLER_KEY,mIsCaller).apply();
                                     Timber.d("IsCaller: " + String.valueOf(mIsCaller));
 
