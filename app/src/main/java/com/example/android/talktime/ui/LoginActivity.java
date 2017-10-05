@@ -33,6 +33,7 @@ import timber.log.Timber;
 public class LoginActivity extends AppCompatActivity {
 
 
+    private static final String FCM_TOKEN_KEY = "fcm_token";
     @BindView(R.id.et_email)
     EditText mETEmail;
     @BindView(R.id.et_password)
@@ -107,59 +108,64 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                final String email = mETEmail.getText().toString();
-                final String password = mETPassword.getText().toString();
-
-                if (TextUtils.isEmpty(email)) {
-                    Toast.makeText(getApplicationContext(), getString(R.string.enter_email_toast),
-                            Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-                if (TextUtils.isEmpty(password)) {
-                    Toast.makeText(getApplicationContext(), getString(R.string.enter_pass_toast),
-                            Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-                mPBLoadingIndicator.setVisibility(View.VISIBLE);
-
-                //authenticate user
-                auth.signInWithEmailAndPassword(email, password)
-                        .addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<AuthResult> task) {
-                                // If sign in fails, display a message to the user. If sign in succeeds
-                                // the auth state listener will be notified and logic to handle the
-                                // signed in user can be handled in the listener.
-                                if (!task.isSuccessful()) {
-                                    mPBLoadingIndicator.setVisibility(View.GONE);
-                                    // there was an error
-                                    if (password.length() < 6) {
-                                        mETPassword.setError(getString(R.string.minimum_password));
-                                    } else {
-                                        Toast.makeText(LoginActivity.this, getString(R.string.auth_failed), Toast.LENGTH_LONG).show();
-                                    }
-                                } else {
-
-                                    Query query = mDBRef.child("callers");
-                                    query.addListenerForSingleValueEvent
-                                            (new ValueEventListener() {
-                                                 @Override
-                                                 public void onDataChange(DataSnapshot dataSnapshot) {
-                                                     new CheckUserTask().execute(dataSnapshot);
-                                                 }
-
-                                                 @Override
-                                                 public void onCancelled(DatabaseError databaseError) {
-                                                 }
-                                             }
-                                            );
-                                }
-                            }
-                        });
+                login();
             }
         });
+    }
+
+    private void login() {
+
+        final String email = mETEmail.getText().toString();
+        final String password = mETPassword.getText().toString();
+
+        if (TextUtils.isEmpty(email)) {
+            Toast.makeText(getApplicationContext(), getString(R.string.enter_email_toast),
+                    Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (TextUtils.isEmpty(password)) {
+            Toast.makeText(getApplicationContext(), getString(R.string.enter_pass_toast),
+                    Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        mPBLoadingIndicator.setVisibility(View.VISIBLE);
+
+        //authenticate user
+        auth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        // If sign in fails, display a message to the user. If sign in succeeds
+                        // the auth state listener will be notified and logic to handle the
+                        // signed in user can be handled in the listener.
+                        if (!task.isSuccessful()) {
+                            mPBLoadingIndicator.setVisibility(View.GONE);
+                            // there was an error
+                            if (password.length() < 6) {
+                                mETPassword.setError(getString(R.string.minimum_password));
+                            } else {
+                                Toast.makeText(LoginActivity.this, getString(R.string.auth_failed), Toast.LENGTH_LONG).show();
+                            }
+                        } else {
+
+                            Query query = mDBRef.child("callers");
+                            query.addListenerForSingleValueEvent
+                                    (new ValueEventListener() {
+                                         @Override
+                                         public void onDataChange(DataSnapshot dataSnapshot) {
+                                             new CheckUserTask().execute(dataSnapshot);
+                                         }
+
+                                         @Override
+                                         public void onCancelled(DatabaseError databaseError) {
+                                         }
+                                     }
+                                    );
+                        }
+                    }
+                });
     }
 
     private class CheckUserTask extends AsyncTask<DataSnapshot, Void, Void> {
@@ -169,16 +175,22 @@ public class LoginActivity extends AppCompatActivity {
             String userId = auth.getCurrentUser().getUid();
             DataSnapshot dataSnapshot = snapshots[0];
             mIsCaller = false;
+            SharedPreferences prefs = getSharedPreferences(SHARED_PREFS_KEY, Context.MODE_PRIVATE);
+            String fcmToken = prefs.getString(FCM_TOKEN_KEY, null);
             if (dataSnapshot.exists()) {
                 // dataSnapshot is the "callers" node with all children with email equal to user's email
                 for (DataSnapshot caller : dataSnapshot.getChildren()) {
                     if (caller.getKey().equals(userId)) {
                         mIsCaller = true;
+                        mDBRef.child("callers").child(userId).child(FCM_TOKEN_KEY).setValue(fcmToken);
                     }
                 }
+                if (!mIsCaller) {
+                    mDBRef.child("receivers").child(userId).child(FCM_TOKEN_KEY).setValue(fcmToken);
+                }
 
-                SharedPreferences prefs = getSharedPreferences(SHARED_PREFS_KEY, Context.MODE_PRIVATE);
                 prefs.edit().putBoolean(IS_CALLER_KEY, mIsCaller).apply();
+
             }
 
             return null;

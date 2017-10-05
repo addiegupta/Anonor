@@ -23,11 +23,8 @@ public class CustomFirebaseInstanceIDService extends FirebaseInstanceIdService {
         // manage this apps subscriptions on the server side, send the
         // Instance ID token to your app server.
 
-//        sendRegistrationToServer(refreshedToken);
         Log.d("CFCMIIDS","Token refreshed");
         SharedPreferences prefs = getSharedPreferences(SHARED_PREFS_KEY, Context.MODE_PRIVATE);
         prefs.edit().putString(FCM_TOKEN,refreshedToken).apply();
-
-
     }
 }

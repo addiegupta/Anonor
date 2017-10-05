@@ -3,13 +3,13 @@ package com.example.android.talktime.model;
 public class User {
     private String email;
     private long duration;
-    private String fcmToken;
+    private String fcm_token;
 
-    public User(String email, long duration, String fcmToken) {
+    public User(String email, long duration, String fcm_token) {
 
         this.email = email;
         this.duration = duration;
-        this.fcmToken = fcmToken;
+        this.fcm_token = fcm_token;
     }
 
     public User() {
@@ -37,12 +37,12 @@ public class User {
         this.duration = duration;
     }
 
-    public void setFcmToken(String fcmToken) {
-        this.fcmToken = fcmToken;
+    public void setFcm_token(String fcm_token) {
+        this.fcm_token = fcm_token;
     }
 
-    public String getFcmToken() {
+    public String getFcm_token() {
 
-        return fcmToken;
+        return fcm_token;
     }
 }

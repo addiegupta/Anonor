@@ -1,12 +1,14 @@
 package com.example.android.talktime.ui;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AlertDialog;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -39,6 +41,7 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
 
     private static final String IS_CALLER_KEY = "is_caller";
     private static final String SHARED_PREFS_KEY = "shared_prefs";
+    private static final String FCM_TOKEN_KEY = "fcm_token";
     @Nullable
     @BindView(R.id.btn_main_call_someone)
     Button mButtonCallSomeone;
@@ -115,33 +118,54 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
 
         switch (menuId) {
             case R.id.menu_main_action_sign_out:
-                signOutUser();
+                showSignOutAlertDialog();
                 break;
         }
         return super.onOptionsItemSelected(item);
     }
+    private void showSignOutAlertDialog(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.sign_out_confirmation);
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builder.setPositiveButton(R.string.sign_out, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                signOutUser();
+            }
+        });
+        builder.show();
+    }
 
     private void signOutUser() {
 
-        //TODO Implement dialog for sign out confirmation
         SharedPreferences prefs = getSharedPreferences(SHARED_PREFS_KEY, Context.MODE_PRIVATE);
         prefs.edit().clear().apply();
 
-        //TODO Delete fcm token from database too
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
+                    if (mIsCaller) {
+                        mDBRef.child("callers").child(mAuth.getCurrentUser().getUid()).child(FCM_TOKEN_KEY).removeValue();
+                    } else {
+                        mDBRef.child("receivers").child(mAuth.getCurrentUser().getUid()).child(FCM_TOKEN_KEY).removeValue();
+
+                    }
                     FirebaseInstanceId.getInstance().deleteInstanceId();
                     FirebaseInstanceId.getInstance().getToken();
                     Timber.d(FirebaseInstanceId.getInstance().getToken());
+                    mAuth.signOut();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
         }).start();
 
-        mAuth.signOut();
         finish();
         startActivity(new Intent(MainActivity.this, LoginActivity.class));
     }
