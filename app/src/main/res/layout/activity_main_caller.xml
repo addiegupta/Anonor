@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
+    android:orientation="vertical"
     android:layout_height="match_parent">
     <Button
         android:layout_width="wrap_content"
@@ -13,4 +14,16 @@
         android:textAllCaps="true"
         android:text="Call Someone"
         android:background="#00ff00"/>
-</FrameLayout>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="SendPush"
+        android:id="@+id/btn_send_push"
+android:textSize="18sp"
+        android:layout_gravity="center"
+        android:padding="12dp"
+        android:textColor="#0000ff"
+        android:textAllCaps="true"
+        android:background="#00ff00"
+        />
+</LinearLayout>

@@ -6,19 +6,30 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.example.android.talktime.R;
 import com.example.android.talktime.SinchService;
 import com.example.android.talktime.model.User;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.GetTokenResult;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -30,6 +41,8 @@ import com.sinch.android.rtc.SinchError;
 import com.sinch.android.rtc.calling.Call;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 import butterknife.BindView;
@@ -45,7 +58,9 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
     @Nullable
     @BindView(R.id.btn_main_call_someone)
     Button mButtonCallSomeone;
-
+    @Nullable
+    @BindView(R.id.btn_send_push)
+    Button mSendPushButton;
 
     private FirebaseAuth mAuth;
     private FirebaseDatabase mUserDatabase;
@@ -53,6 +68,7 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
     private DatabaseReference mDBRef;
     private String mReceiverId;
     private boolean mIsCaller;
+    private String mFirebaseIDToken;
 
 
     @Override
@@ -66,6 +82,7 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
         mUserDatabase = FirebaseDatabase.getInstance();
         mDBRef = mUserDatabase.getReference();
 
+        getFirebaseIDToken();
         Timber.plant(new Timber.DebugTree());
         Timber.d("mIsCaller:" + String.valueOf(mIsCaller));
 
@@ -73,7 +90,12 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
             setContentView(R.layout.activity_main_caller);
             ButterKnife.bind(this);
             mButtonCallSomeone.setEnabled(false);
-
+            mSendPushButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    sendPush();
+                }
+            });
             mButtonCallSomeone.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -105,6 +127,23 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
 
     }
 
+    private void getFirebaseIDToken() {
+        mAuth.getCurrentUser().getToken(true)
+                .addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
+                    public void onComplete(@NonNull Task<GetTokenResult> task) {
+                        if (task.isSuccessful()) {
+                            mFirebaseIDToken = task.getResult().getToken();
+                            // Send token to your backend via HTTPS
+                            // ...
+                        } else {
+                            // Handle error -> task.getException();
+                            task.getException().printStackTrace();
+                        }
+                    }
+                });
+
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
@@ -123,7 +162,8 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
         }
         return super.onOptionsItemSelected(item);
     }
-    private void showSignOutAlertDialog(){
+
+    private void showSignOutAlertDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(R.string.sign_out_confirmation);
         builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -139,6 +179,34 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
             }
         });
         builder.show();
+    }
+
+
+    private void sendPush() {
+
+
+        String url = "https://us-central1-talktime-5f9a9.cloudfunctions.net/sendPush";
+
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.d("DDF", response);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d("DDF", error.toString());
+            }
+
+        }){
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Authorization", mFirebaseIDToken);
+                return headers;
+            }
+        };
+        Volley.newRequestQueue(this).add(stringRequest);
     }
 
     private void signOutUser() {
@@ -183,8 +251,15 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
     private void selectCaller(DataSnapshot dataSnapshot) {
 
         DataSnapshot list = dataSnapshot.child("receivers");
-        int dbSize = (int) list.getChildrenCount();
 
+        applyOldAlgorithm(list);
+//        applyNewAlgorithm(list);
+
+    }
+
+    private void applyOldAlgorithm(DataSnapshot list) {
+
+        int dbSize = (int) list.getChildrenCount();
         //TODO Optimise for memory
         Random r = new Random();
         int ranNum = r.nextInt(dbSize);
@@ -202,6 +277,14 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
         }
     }
 
+    private void applyNewAlgorithm(DataSnapshot list) {
+
+        int dbSize = (int) list.getChildrenCount();
+
+        int usersToBeCalled = Math.min(dbSize / 10 + 1, 10);
+
+
+    }
 
     private void callSomeone() {
         try {
