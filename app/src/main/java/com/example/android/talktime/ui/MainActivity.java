@@ -55,6 +55,7 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
     private static final String IS_CALLER_KEY = "is_caller";
     private static final String SHARED_PREFS_KEY = "shared_prefs";
     private static final String FCM_TOKEN_KEY = "fcm_token";
+    private static final String CALLERID_DATA_KEY = "callerId";
     @Nullable
     @BindView(R.id.btn_main_call_someone)
     Button mButtonCallSomeone;
@@ -106,6 +107,12 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
         } else {
             setContentView(R.layout.activity_main_receiver);
             ButterKnife.bind(this);
+
+            if (getIntent().hasExtra(CALLERID_DATA_KEY)){
+                String callerId = getIntent().getStringExtra(CALLERID_DATA_KEY);
+
+            }
+
         }
 
         // Read from the database

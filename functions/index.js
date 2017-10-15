@@ -12,9 +12,12 @@ exports.sendPush = functions.https.onRequest((request,response) => {
       return;
   }
 
-
+var userCallerId;
 admin.auth().verifyIdToken(request.headers.authorization).then(decodedIdToken => {
     console.log('ID Token correctly decoded', decodedIdToken);
+	userCallerId = decodedIdToken.user_id;
+	console.log("UserCallerId",userCallerId)
+    
     request.user = decodedIdToken;
     response.send(request.body.name +', Hello from Firebase!');
   }).catch(error => {
@@ -35,13 +38,19 @@ admin.auth().verifyIdToken(request.headers.authorization).then(decodedIdToken =>
         	}
         }
         let payload = {
-            notification: {
-                title: 'Firebase Notification',
-                body: 'a',
-                sound: 'default',
-                badge: '1'
-            }
+        	//Gives error
+        	// priority: "high",
+            
+        	data: {
+        		callerId: userCallerId
+            	// title: valueObject.title,
+            	// message: valueObject.message
+        	}
+        		// Gives error
+   			//, time_to_live : 60
         };
+        console.log("userCallerId",userCallerId);
+
         if (tokens.length!=0) {
         	console.log("Returning tokens to push");
         return admin.messaging().sendToDevice(tokens, payload);
