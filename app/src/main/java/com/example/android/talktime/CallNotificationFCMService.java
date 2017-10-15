@@ -9,7 +9,7 @@ import android.os.Looper;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
-import com.example.android.talktime.ui.MainActivity;
+import com.example.android.talktime.ui.CallScreenActivity;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -48,7 +48,7 @@ public class CallNotificationFCMService extends FirebaseMessagingService {
         NotificationManager mNotificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-        Intent intent = new Intent(CallNotificationFCMService.this, MainActivity.class);
+        Intent intent = new Intent(CallNotificationFCMService.this, CallScreenActivity.class);
         intent.putExtra(CALLERID_DATA_KEY,callerId);
 
         PendingIntent pending = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);

@@ -70,6 +70,8 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
     private String mReceiverId;
     private boolean mIsCaller;
     private String mFirebaseIDToken;
+    private boolean mPendingCallRequest=false;
+    private String mOriginalCaller;
 
 
     @Override
@@ -109,10 +111,11 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
             ButterKnife.bind(this);
 
             if (getIntent().hasExtra(CALLERID_DATA_KEY)){
-                String callerId = getIntent().getStringExtra(CALLERID_DATA_KEY);
+                mOriginalCaller = getIntent().getStringExtra(CALLERID_DATA_KEY);
+                mPendingCallRequest = true;
 
+//                callUser(callerId);
             }
-
         }
 
         // Read from the database
@@ -293,6 +296,26 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
 
     }
 
+    private void  callUser(String callerUid){
+        try {
+            Call call = getSinchServiceInterface().callUser(callerUid);
+
+            if (call == null) {
+                // Service failed for some reason, show a Toast and abort
+                Toast.makeText(this, "Service is not started. Try stopping the service and starting it again before "
+                        + "placing a call.", Toast.LENGTH_LONG).show();
+                return;
+            }
+            String callId = call.getCallId();
+            Intent callScreenActivity = new Intent(this, CallScreenActivity.class);
+            callScreenActivity.putExtra(SinchService.CALL_ID, callId);
+            startActivity(callScreenActivity);
+
+        } catch (MissingPermissionException e) {
+            ActivityCompat.requestPermissions(this, new String[]{e.getRequiredPermission()}, 0);
+        }
+    }
+
     private void callSomeone() {
         try {
             Call call = getSinchServiceInterface().callUser(mReceiverId);
@@ -322,9 +345,14 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
 
         //Register user
         if (getSinchServiceInterface() != null && !getSinchServiceInterface().isStarted()) {
-            getSinchServiceInterface().startClient(mAuth.getCurrentUser().getEmail());
-            Toast.makeText(MainActivity.this, "Registered as " + mAuth.getCurrentUser().getEmail(), Toast.LENGTH_SHORT).show();
+            getSinchServiceInterface().startClient(mAuth.getCurrentUser().getUid());
+            Toast.makeText(MainActivity.this, "Registered as " + mAuth.getCurrentUser().getUid(), Toast.LENGTH_SHORT).show();
         }
+        if (mPendingCallRequest){
+            mPendingCallRequest= false;
+            callUser(mOriginalCaller);
+        }
+
     }
 
 

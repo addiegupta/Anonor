@@ -5,6 +5,7 @@ admin.initializeApp(functions.config().firebase);
 
 exports.sendPush = functions.https.onRequest((request,response) => {
     console.log('sendPush called');
+	var userCallerId;
 
  if (!request.headers.authorization) {
       console.error('No Firebase ID token was passed');
@@ -12,7 +13,6 @@ exports.sendPush = functions.https.onRequest((request,response) => {
       return;
   }
 
-var userCallerId;
 admin.auth().verifyIdToken(request.headers.authorization).then(decodedIdToken => {
     console.log('ID Token correctly decoded', decodedIdToken);
 	userCallerId = decodedIdToken.user_id;
@@ -38,17 +38,10 @@ admin.auth().verifyIdToken(request.headers.authorization).then(decodedIdToken =>
         	}
         }
         let payload = {
-        	//Gives error
-        	// priority: "high",
-            
-        	data: {
-        		callerId: userCallerId
-            	// title: valueObject.title,
-            	// message: valueObject.message
-        	}
-        		// Gives error
-   			//, time_to_live : 60
-        };
+        				data: {
+        						callerId: userCallerId
+            				}
+        			};
         console.log("userCallerId",userCallerId);
 
         if (tokens.length!=0) {
@@ -60,6 +53,7 @@ admin.auth().verifyIdToken(request.headers.authorization).then(decodedIdToken =>
         }
     });
 });
+
 function loadUsers() {
     let dbRef = admin.database().ref('/receivers');
     let defer = new Promise((resolve, reject) => {

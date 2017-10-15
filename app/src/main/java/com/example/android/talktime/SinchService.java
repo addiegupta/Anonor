@@ -6,7 +6,7 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
 
-import com.example.android.talktime.ui.IncomingCallScreenActivity;
+import com.example.android.talktime.ui.CallScreenActivity;
 import com.sinch.android.rtc.ClientRegistration;
 import com.sinch.android.rtc.Sinch;
 import com.sinch.android.rtc.SinchClient;
@@ -29,6 +29,8 @@ public class SinchService extends Service {
     private SinchServiceInterface mSinchServiceInterface = new SinchServiceInterface();
     private SinchClient mSinchClient;
     private String mUserId;
+
+    private String CALLER_SCREEN_BOOL_KEY= "caller_screen";
 
     private StartFailedListener mListener;
 
@@ -176,8 +178,10 @@ public class SinchService extends Service {
         @Override
         public void onIncomingCall(CallClient callClient, Call call) {
             Log.d(TAG, "Incoming call");
-            Intent intent = new Intent(SinchService.this, IncomingCallScreenActivity.class);
+            Intent intent = new Intent (SinchService.this, CallScreenActivity.class);
+//            Intent intent = new Intent(SinchService.this, IncomingCallScreenActivity.class);
             intent.putExtra(CALL_ID, call.getCallId());
+            intent.putExtra(CALLER_SCREEN_BOOL_KEY,true);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             SinchService.this.startActivity(intent);
         }

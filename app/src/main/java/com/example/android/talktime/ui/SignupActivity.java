@@ -149,6 +149,7 @@ public class SignupActivity extends AppCompatActivity {
 
                                     SharedPreferences prefs = getSharedPreferences(SHARED_PREFS_KEY, Context.MODE_PRIVATE);
                                     //TODO Havent handled token insertion in DB onTokenRefresh
+                                    //FIXME No insertion in DB on signup
                                     String fcmToken = prefs.getString(FCM_TOKEN,null);
                                     User user = new User(email, 0,fcmToken);
 
