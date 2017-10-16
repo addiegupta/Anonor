@@ -1,7 +1,10 @@
 package com.example.android.talktime.ui;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.os.Bundle;
+import android.os.Looper;
 import android.support.v4.app.ActivityCompat;
 import android.view.View;
 import android.widget.Button;
@@ -11,6 +14,13 @@ import android.widget.Toast;
 import com.example.android.talktime.AudioPlayer;
 import com.example.android.talktime.R;
 import com.example.android.talktime.SinchService;
+import com.example.android.talktime.model.User;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.sinch.android.rtc.MissingPermissionException;
 import com.sinch.android.rtc.PushPair;
 import com.sinch.android.rtc.calling.Call;
@@ -34,6 +44,10 @@ public class CallScreenActivity extends BaseActivity {
     private UpdateCallDurationTask mDurationTask;
     private String CALLER_SCREEN_BOOL_KEY = "caller_screen";
     private static final String CALLERID_DATA_KEY = "callerId";
+    private static final String IS_CALLER_KEY = "is_caller";
+    private static final String SHARED_PREFS_KEY = "shared_prefs";
+    private static final String DB_DURATION_KEY = "duration";
+    private boolean mIsCaller;
 
     private String mCallId;
 
@@ -41,12 +55,14 @@ public class CallScreenActivity extends BaseActivity {
     TextView mCallDuration;
     @BindView(R.id.callState)
     TextView mCallState;
-    @BindView(R.id.remoteUser)
-    TextView mCallerName;
     @BindView(R.id.hangupButton)
     Button mEndCallButton;
     private boolean mPendingCallRequest = false;
     private String mOriginalCaller;
+    private FirebaseAuth mAuth;
+    private FirebaseDatabase mDatabase;
+    private DatabaseReference mDBRef;
+    private long mTotalDuration;
 
     private class UpdateCallDurationTask extends TimerTask {
 
@@ -70,6 +86,13 @@ public class CallScreenActivity extends BaseActivity {
         Timber.plant(new Timber.DebugTree());
         mAudioPlayer = new AudioPlayer(this);
 
+        SharedPreferences preferences = getSharedPreferences(SHARED_PREFS_KEY, Context.MODE_PRIVATE);
+        mIsCaller = preferences.getBoolean(IS_CALLER_KEY, true);
+
+        mAuth = FirebaseAuth.getInstance();
+        mDatabase = FirebaseDatabase.getInstance();
+        mDBRef = mDatabase.getReference();
+
         if (getIntent().hasExtra(CALLERID_DATA_KEY)) {
             mOriginalCaller = getIntent().getStringExtra(CALLERID_DATA_KEY);
             mPendingCallRequest = true;
@@ -84,11 +107,45 @@ public class CallScreenActivity extends BaseActivity {
                 endCall();
             }
         });
+
+
+        //Get duration value
+        mDBRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                saveDuration(dataSnapshot);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                System.out.println("The read failed: " + databaseError.getCode());
+            }
+        });
+
+    }
+
+    private void saveDuration(DataSnapshot snapshot) {
+        DataSnapshot list;
+        if (mIsCaller) {
+            list = snapshot.child("callers");
+        } else {
+            list = snapshot.child("receivers");
+        }
+        for (DataSnapshot ds : list.getChildren()) {
+
+            if (ds.getKey().equals(mAuth.getCurrentUser().getUid())) {
+                mTotalDuration = ds.getValue(User.class).getDuration();
+            }
+        }
     }
 
     @Override
     public void onServiceConnected() {
 
+        if (getSinchServiceInterface() != null && !getSinchServiceInterface().isStarted()) {
+            getSinchServiceInterface().startClient(mAuth.getCurrentUser().getUid());
+            Toast.makeText(CallScreenActivity.this, "Registered as " + mAuth.getCurrentUser().getUid(), Toast.LENGTH_SHORT).show();
+        }
         if (mPendingCallRequest) {
             try {
                 Call call = getSinchServiceInterface().callUser(mOriginalCaller);
@@ -100,6 +157,8 @@ public class CallScreenActivity extends BaseActivity {
                     return;
                 }
                 mCallId = call.getCallId();
+                call.addCallListener(new SinchCallListener());
+                mCallState.setText(call.getState().toString());
 
             } catch (MissingPermissionException e) {
                 ActivityCompat.requestPermissions(this, new String[]{e.getRequiredPermission()}, 0);
@@ -110,7 +169,6 @@ public class CallScreenActivity extends BaseActivity {
             if (call != null) {
                 call.answer();
                 call.addCallListener(new SinchCallListener());
-                mCallerName.setText(call.getRemoteUserId());
                 mCallState.setText(call.getState().toString());
             } else {
                 Timber.e("Started with invalid callId, aborting.");
@@ -161,6 +219,23 @@ public class CallScreenActivity extends BaseActivity {
         }
     }
 
+    private void updateDatabaseCallDuration(final long duration) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if (Looper.myLooper() == null) {
+                    Looper.prepare();
+                }
+                mTotalDuration += duration;
+                if (mIsCaller) {
+                    mDBRef.child("callers").child(mAuth.getCurrentUser().getUid()).child(DB_DURATION_KEY).setValue(mTotalDuration);
+                } else {
+                    mDBRef.child("receivers").child(mAuth.getCurrentUser().getUid()).child(DB_DURATION_KEY).setValue(mTotalDuration);
+                }
+            }
+        }).start();
+    }
+
     private class SinchCallListener implements CallListener {
 
         @Override
@@ -171,6 +246,11 @@ public class CallScreenActivity extends BaseActivity {
             setVolumeControlStream(AudioManager.USE_DEFAULT_STREAM_TYPE);
             String endMsg = "Call ended: " + call.getDetails().toString();
             Toast.makeText(CallScreenActivity.this, endMsg, Toast.LENGTH_LONG).show();
+            long duration = call.getDetails().getDuration();
+
+            updateDatabaseCallDuration(duration);
+
+
             endCall();
         }
 

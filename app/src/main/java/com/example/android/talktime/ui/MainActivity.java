@@ -1,16 +1,18 @@
 package com.example.android.talktime.ui;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,25 +27,19 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.android.talktime.R;
 import com.example.android.talktime.SinchService;
-import com.example.android.talktime.model.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.GetTokenResult;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
-import com.sinch.android.rtc.MissingPermissionException;
 import com.sinch.android.rtc.SinchError;
 import com.sinch.android.rtc.calling.Call;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -56,9 +52,7 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
     private static final String SHARED_PREFS_KEY = "shared_prefs";
     private static final String FCM_TOKEN_KEY = "fcm_token";
     private static final String CALLERID_DATA_KEY = "callerId";
-    @Nullable
-    @BindView(R.id.btn_main_call_someone)
-    Button mButtonCallSomeone;
+
     @Nullable
     @BindView(R.id.btn_send_push)
     Button mSendPushButton;
@@ -70,13 +64,18 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
     private String mReceiverId;
     private boolean mIsCaller;
     private String mFirebaseIDToken;
-    private boolean mPendingCallRequest=false;
+    private boolean mPendingCallRequest = false;
     private String mOriginalCaller;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+
+            handlePermissions();
+        }
 
         SharedPreferences prefs = getSharedPreferences(SHARED_PREFS_KEY, Context.MODE_PRIVATE);
         mIsCaller = prefs.getBoolean(IS_CALLER_KEY, true);
@@ -92,17 +91,10 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
         if (mIsCaller) {
             setContentView(R.layout.activity_main_caller);
             ButterKnife.bind(this);
-            mButtonCallSomeone.setEnabled(false);
             mSendPushButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    sendPush();
-                }
-            });
-            mButtonCallSomeone.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    callSomeone();
+                    sendCallRequest();
                 }
             });
 
@@ -110,48 +102,41 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
             setContentView(R.layout.activity_main_receiver);
             ButterKnife.bind(this);
 
-            if (getIntent().hasExtra(CALLERID_DATA_KEY)){
+            if (getIntent().hasExtra(CALLERID_DATA_KEY)) {
                 mOriginalCaller = getIntent().getStringExtra(CALLERID_DATA_KEY);
                 mPendingCallRequest = true;
-
-//                callUser(callerId);
             }
         }
-
-        // Read from the database
-        mDBRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                // This method is called once with the initial value and again
-                // whenever data at this location is updated.
-                if (mIsCaller) {
-                    selectCaller(dataSnapshot);
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError error) {
-                // Failed to read value
-            }
-        });
-
     }
 
+
+    private void handlePermissions() {
+
+        int permissionCheck = ContextCompat.checkSelfPermission(this,
+                Manifest.permission.RECORD_AUDIO);
+
+        if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.RECORD_AUDIO}, 1);
+        }
+    }
+
+    /**
+     * Needed for authentication of user while using cloud functions
+     */
     private void getFirebaseIDToken() {
         mAuth.getCurrentUser().getToken(true)
                 .addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
                     public void onComplete(@NonNull Task<GetTokenResult> task) {
                         if (task.isSuccessful()) {
                             mFirebaseIDToken = task.getResult().getToken();
-                            // Send token to your backend via HTTPS
-                            // ...
                         } else {
                             // Handle error -> task.getException();
                             task.getException().printStackTrace();
                         }
                     }
                 });
-
     }
 
     @Override
@@ -192,7 +177,7 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
     }
 
 
-    private void sendPush() {
+    private void sendCallRequest() {
 
 
         String url = "https://us-central1-talktime-5f9a9.cloudfunctions.net/sendPush";
@@ -200,15 +185,14 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                Log.d("DDF", response);
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.d("DDF", error.toString());
+                Timber.d(error.toString());
             }
 
-        }){
+        }) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<>();
@@ -216,7 +200,10 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
                 return headers;
             }
         };
+        Timber.d(stringRequest.toString());
         Volley.newRequestQueue(this).add(stringRequest);
+
+        startActivity(new Intent(MainActivity.this, WaitingCallActivity.class).addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY));
     }
 
     private void signOutUser() {
@@ -258,46 +245,7 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
     public void onStarted() {
     }
 
-    private void selectCaller(DataSnapshot dataSnapshot) {
-
-        DataSnapshot list = dataSnapshot.child("receivers");
-
-        applyOldAlgorithm(list);
-//        applyNewAlgorithm(list);
-
-    }
-
-    private void applyOldAlgorithm(DataSnapshot list) {
-
-        int dbSize = (int) list.getChildrenCount();
-        //TODO Optimise for memory
-        Random r = new Random();
-        int ranNum = r.nextInt(dbSize);
-        User userToBeCalled;
-        int i = 0;
-        for (DataSnapshot ds : list.getChildren()) {
-            if (ranNum == i) {
-                userToBeCalled = ds.getValue(User.class);
-                mReceiverId = userToBeCalled.getEmail();
-                mButtonCallSomeone.setEnabled(true);
-                Toast.makeText(this, mReceiverId, Toast.LENGTH_SHORT).show();
-                break;
-            }
-            i++;
-        }
-    }
-
-    private void applyNewAlgorithm(DataSnapshot list) {
-
-        int dbSize = (int) list.getChildrenCount();
-
-        int usersToBeCalled = Math.min(dbSize / 10 + 1, 10);
-
-
-    }
-
-    private void  callUser(String callerUid){
-        try {
+    private void callUser(String callerUid) {
             Call call = getSinchServiceInterface().callUser(callerUid);
 
             if (call == null) {
@@ -310,30 +258,6 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
             Intent callScreenActivity = new Intent(this, CallScreenActivity.class);
             callScreenActivity.putExtra(SinchService.CALL_ID, callId);
             startActivity(callScreenActivity);
-
-        } catch (MissingPermissionException e) {
-            ActivityCompat.requestPermissions(this, new String[]{e.getRequiredPermission()}, 0);
-        }
-    }
-
-    private void callSomeone() {
-        try {
-            Call call = getSinchServiceInterface().callUser(mReceiverId);
-
-            if (call == null) {
-                // Service failed for some reason, show a Toast and abort
-                Toast.makeText(this, "Service is not started. Try stopping the service and starting it again before "
-                        + "placing a call.", Toast.LENGTH_LONG).show();
-                return;
-            }
-            String callId = call.getCallId();
-            Intent callScreenActivity = new Intent(this, CallScreenActivity.class);
-            callScreenActivity.putExtra(SinchService.CALL_ID, callId);
-            startActivity(callScreenActivity);
-
-        } catch (MissingPermissionException e) {
-            ActivityCompat.requestPermissions(this, new String[]{e.getRequiredPermission()}, 0);
-        }
     }
 
 
@@ -348,8 +272,8 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
             getSinchServiceInterface().startClient(mAuth.getCurrentUser().getUid());
             Toast.makeText(MainActivity.this, "Registered as " + mAuth.getCurrentUser().getUid(), Toast.LENGTH_SHORT).show();
         }
-        if (mPendingCallRequest){
-            mPendingCallRequest= false;
+        if (mPendingCallRequest) {
+            mPendingCallRequest = false;
             callUser(mOriginalCaller);
         }
 
@@ -358,10 +282,12 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
 
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            Toast.makeText(this, "You may now place a call", Toast.LENGTH_LONG).show();
+
+            Toast.makeText(this, "Permission succesfully granted", Toast.LENGTH_SHORT).show();
         } else {
-            Toast.makeText(this, "This application needs permission to use your microphone to function properly.", Toast
+            Toast.makeText(this, "Cannot function without microphone access", Toast
                     .LENGTH_LONG).show();
+            finish();
         }
     }
 

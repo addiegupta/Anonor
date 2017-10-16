@@ -1,79 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:weightSum="5"
-    android:background="#ffffffff">
+    android:layout_height="match_parent">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:orientation="vertical"
-        android:layout_weight="1"
-        android:background="#fffafafa"
-        >
 
-        <TextView
-            android:id="@+id/remoteUser"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_margin="10dp"
-            android:text=""
-            android:textColor="@color/sinch_purple"
-            android:textSize="28sp"/>
+    <TextView
+        android:id="@+id/callState"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="42dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Ringing" />
 
-        <TextView
-            android:id="@+id/callState"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:text="Ringing"
-            android:textColor="@color/sinch_purple"
-            android:textSize="16sp"
-            android:textAllCaps="true"
-            />
+    <TextView
+        android:id="@+id/callDuration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="0dp"
+        android:layout_marginRight="0dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintLeft_toLeftOf="@+id/callState"
+        app:layout_constraintRight_toRightOf="@+id/callState"
+        app:layout_constraintTop_toBottomOf="@+id/callState"
+        tools:text="00:00" />
 
-        <TextView
-            android:id="@+id/callDuration"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="8dp"
-            android:layout_marginTop="4dp"
-            android:text="00:00"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textColor="@color/sinch_purple"
-            android:textSize="16sp"/>
-
-    </LinearLayout>
-
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:src="@drawable/call"
-        android:padding="0dip"
-        android:layout_weight="3"
-        android:contentDescription="Call background">
-
-    </ImageView>
-
-    <RelativeLayout
-        android:id="@+id/bottomPanel"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:background="@color/greyish"
-        android:layout_weight="1">
-        <Button
-            android:id="@+id/hangupButton"
-            android:paddingBottom="20dp"
-            android:paddingTop="20dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:background="@drawable/button_end"/>
-
-    </RelativeLayout>
-
-</LinearLayout>
+    <Button
+        android:id="@+id/hangupButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:background="@android:color/holo_red_dark"
+        android:text="End Call"
+        android:textColor="@android:color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
+</android.support.constraint.ConstraintLayout>

@@ -6,7 +6,7 @@
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password (optional)</string>
     <string name="action_sign_in">Sign in or register</string>
-    <string name="action_sign_in_short">Sign in</string>
+    <string name="action_sign_up">Sign Up</string>
     <string name="error_invalid_email">This email address is invalid</string>
     <string name="error_invalid_password">This password is too short</string>
     <string name="error_incorrect_password">This password is incorrect</string>
@@ -18,7 +18,7 @@
 
     <!--Strings from Firebase auth demo-->
     <string name="email">Email</string>
-    <string name="minimum_password">Password too short, enter minimum 6 characters!</string>
+    <string name="minimum_password">Password should be at least 6 characters long</string>
     <string name="auth_failed">Authentication failed, check your email and password or sign up</string>
     <string name="change_email">Change Email</string>
     <string name="change_password">Change Password</string>
@@ -31,8 +31,8 @@
     <string name="hint_password">Password</string>
     <string name="hint_name">Fullname</string>
     <string name="btn_login">LOGIN</string>
-    <string name="btn_link_to_register">Not a member? Get registered in Firebase now!</string>
-    <string name="btn_link_to_login">Already registered. Login Me!</string>
+    <string name="btn_link_to_register">Don\'t have an account? Sign Up here!</string>
+    <string name="btn_link_to_login">Already registered? Login here</string>
     <string name="title_activity_reset_password">ResetPasswordActivity</string>
     <string name="btn_forgot_password">Forgot your password?</string>
     <string name="btn_reset_password">Reset Password</string>
@@ -43,7 +43,7 @@
     <string name="remove">Remove</string>
     <string name="sign_out">Sign Out</string>
     <string name="lbl_forgot_password">Forgot password?</string>
-    <string name="forgot_password_msg">We just need your registered Email Id to sent you password reset instructions.</string>
+    <string name="forgot_password_msg">Enter your email address to receive password reset instructions</string>
     <string name="mic_permission_required">This application needs permission to use your microphone to function properly.</string>
     <string name="may_answer_call_now">You may now answer the call</string>
     <string name="enter_email_toast">Enter email address!</string>
@@ -57,5 +57,6 @@
     <string name="receiver">Receiver</string>
     <string name="cancel">Cancel</string>
     <string name="sign_out_confirmation">Are you sure you want to sign out?</string>
+    <string name="calling_people_message">Calling people...</string>
 
 </resources>

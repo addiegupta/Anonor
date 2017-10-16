@@ -34,7 +34,6 @@ public class SignupActivity extends AppCompatActivity {
     private static final String IS_CALLER_KEY = "is_caller";
     private static final String FCM_TOKEN = "fcm_token";
 
-//TODO Refactor UI elements code using butterknife etc
 
     @BindView(R.id.sign_in_button)
     Button mButtonSignin;

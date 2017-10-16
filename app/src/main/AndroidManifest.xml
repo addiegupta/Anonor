@@ -34,50 +34,57 @@
         android:theme="@style/AppTheme">
         <service android:name=".SinchService" />
 
-        <activity android:name=".ui.CallScreenActivity"
+        <activity
+            android:name=".ui.CallScreenActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".ui.IncomingCallScreenActivity"
+        <activity
+            android:name=".ui.IncomingCallScreenActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".ui.BaseActivity"
+        <activity
+            android:name=".ui.BaseActivity"
             android:screenOrientation="portrait" />
-
-        <activity android:name=".ui.SignupActivity"
+        <activity
+            android:name=".ui.SignupActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.MainActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".ui.ResetPasswordActivity"
+        <activity
+            android:name=".ui.MainActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".ui.LoginActivity"
-            android:screenOrientation="portrait"/>
-        <!--FCM services-->
-        <service
-            android:name=".CallNotificationFCMService">
+        <activity
+            android:name=".ui.ResetPasswordActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.LoginActivity"
+            android:screenOrientation="portrait" />
+        <!-- FCM services -->
+        <service android:name=".CallNotificationFCMService">
             <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
-
-        <service
-            android:name=".CustomFirebaseInstanceIDService">
+        <service android:name=".CustomFirebaseInstanceIDService">
             <intent-filter>
-                <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
         </service>
 
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@mipmap/ic_launcher" />
-        <!-- Set color used with incoming notification messages. This is used when no color is set for the incoming
-             notification message. See README(https://goo.gl/6BKBk7) for more. -->
+        <!--
+             Set color used with incoming notification messages. This is used when no color is set for the incoming
+             notification message. See README(https://goo.gl/6BKBk7) for more.
+        -->
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/colorAccent" />
 
+        <activity android:name=".ui.WaitingCallActivity"></activity>
     </application>
 
 </manifest>
