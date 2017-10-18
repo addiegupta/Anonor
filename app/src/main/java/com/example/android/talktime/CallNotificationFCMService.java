@@ -1,5 +1,6 @@
 package com.example.android.talktime;
 
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -19,7 +20,6 @@ public class CallNotificationFCMService extends FirebaseMessagingService {
     private static final String CALLERID_DATA_KEY = "callerId";
     private static final String NOTIF_TITLE_TEXT = "Someone is calling";
     private static final String NOTIF_BODY_TEXT = "Tap to pick up";
-    private int i = 0;
 
 
     @Override
@@ -38,9 +38,12 @@ public class CallNotificationFCMService extends FirebaseMessagingService {
 
     private void createNotification(String callerId) {
 
+
         NotificationCompat.Builder notificationBuilder =
                 new NotificationCompat.Builder(this)
                         .setAutoCancel(true)
+                        .setPriority(NotificationCompat.PRIORITY_HIGH)
+                        .setDefaults(Notification.DEFAULT_SOUND)
                         .setSmallIcon(R.mipmap.ic_launcher_round)
                         .setContentTitle(NOTIF_TITLE_TEXT)
                         .setContentText(NOTIF_BODY_TEXT);
@@ -56,25 +59,20 @@ public class CallNotificationFCMService extends FirebaseMessagingService {
 
         // using the same tag and Id causes the new notification to replace an existing one
         String tag = String.valueOf(callerId);
-        int id = ++i;
-        mNotificationManager.notify(tag, id, notificationBuilder.build());
+        mNotificationManager.notify(tag,1, notificationBuilder.build());
 
-        //FIXME Not working
-        removeNotification(id);
-
-
+        removeNotification(tag);
     }
 
-    private void removeNotification(final int id) {
+    private void removeNotification(final String tag) {
         Handler handler = new Handler(Looper.getMainLooper());
         long delayInMilliseconds = 30000;
         final NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         handler.postDelayed(new Runnable() {
             public void run() {
-                notificationManager.cancel(id);
+                notificationManager.cancel(tag,1);
             }
         }, delayInMilliseconds);
     }
-
 }
