@@ -46,7 +46,11 @@ admin.auth().verifyIdToken(request.headers.authorization).then(decodedIdToken =>
 
         if (tokens.length!=0) {
         	console.log("Returning tokens to push");
-        return admin.messaging().sendToDevice(tokens, payload);
+
+
+
+
+        	return admin.messaging().sendToDevice(tokens, payload);
         }
         else{
         	return null;

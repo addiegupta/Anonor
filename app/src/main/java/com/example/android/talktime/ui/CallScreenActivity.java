@@ -20,6 +20,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.sinch.android.rtc.MissingPermissionException;
 import com.sinch.android.rtc.PushPair;
@@ -47,7 +48,9 @@ public class CallScreenActivity extends BaseActivity {
     private static final String IS_CALLER_KEY = "is_caller";
     private static final String SHARED_PREFS_KEY = "shared_prefs";
     private static final String DB_DURATION_KEY = "duration";
+    private static final String CALL_REQUEST_KEY = "call_request";
     private boolean mIsCaller;
+    private boolean mServiceConnected = false;
 
     private String mCallId;
 
@@ -93,10 +96,13 @@ public class CallScreenActivity extends BaseActivity {
         mDatabase = FirebaseDatabase.getInstance();
         mDBRef = mDatabase.getReference();
 
+        // Call picked up
         if (getIntent().hasExtra(CALLERID_DATA_KEY)) {
             mOriginalCaller = getIntent().getStringExtra(CALLERID_DATA_KEY);
-            mPendingCallRequest = true;
-        } else {
+            handleCall(mOriginalCaller);
+        }
+        //Call created by caller
+        else {
             mCallId = getIntent().getStringExtra(SinchService.CALL_ID);
             Timber.d(mCallId);
         }
@@ -124,6 +130,31 @@ public class CallScreenActivity extends BaseActivity {
 
     }
 
+    private void handleCall(final String callerId) {
+
+
+        Query query = mDBRef.child("callers");
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.child(callerId).child(CALL_REQUEST_KEY).getValue().equals("true")) {
+                    mDBRef.child("callers").child(callerId).child(CALL_REQUEST_KEY).setValue("false");
+                    mPendingCallRequest = true;
+                    if (mServiceConnected) {
+                        createCall();
+                    }
+                } else {
+                    Toast.makeText(CallScreenActivity.this, "Too late", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
     private void saveDuration(DataSnapshot snapshot) {
         DataSnapshot list;
         if (mIsCaller) {
@@ -146,22 +177,11 @@ public class CallScreenActivity extends BaseActivity {
             getSinchServiceInterface().startClient(mAuth.getCurrentUser().getUid());
             Toast.makeText(CallScreenActivity.this, "Registered as " + mAuth.getCurrentUser().getUid(), Toast.LENGTH_SHORT).show();
         }
-        if (mPendingCallRequest) {
-            try {
-                Call call = getSinchServiceInterface().callUser(mOriginalCaller);
+        if (!mIsCaller) {
 
-                if (call == null) {
-                    // Service failed for some reason, show a Toast and abort
-                    Toast.makeText(this, "Service is not started. Try stopping the service and starting it again before "
-                            + "placing a call.", Toast.LENGTH_LONG).show();
-                    return;
-                }
-                mCallId = call.getCallId();
-                call.addCallListener(new SinchCallListener());
-                mCallState.setText(call.getState().toString());
-
-            } catch (MissingPermissionException e) {
-                ActivityCompat.requestPermissions(this, new String[]{e.getRequiredPermission()}, 0);
+            mServiceConnected = true;
+            if (mPendingCallRequest) {
+                createCall();
             }
         } else {
 
@@ -174,6 +194,27 @@ public class CallScreenActivity extends BaseActivity {
                 Timber.e("Started with invalid callId, aborting.");
                 finish();
             }
+        }
+    }
+
+
+    private void createCall() {
+        try {
+            Call call = getSinchServiceInterface().callUser(mOriginalCaller);
+
+            Toast.makeText(this, "Calling " + mOriginalCaller, Toast.LENGTH_SHORT).show();
+            if (call == null) {
+                // Service failed for some reason, show a Toast and abort
+                Toast.makeText(this, "Service is not started. Try stopping the service and starting it again before "
+                        + "placing a call.", Toast.LENGTH_LONG).show();
+                return;
+            }
+            mCallId = call.getCallId();
+            call.addCallListener(new SinchCallListener());
+            mCallState.setText(call.getState().toString());
+
+        } catch (MissingPermissionException e) {
+            ActivityCompat.requestPermissions(this, new String[]{e.getRequiredPermission()}, 0);
         }
     }
 

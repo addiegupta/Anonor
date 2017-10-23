@@ -35,7 +35,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.sinch.android.rtc.SinchError;
-import com.sinch.android.rtc.calling.Call;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -52,6 +51,7 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
     private static final String SHARED_PREFS_KEY = "shared_prefs";
     private static final String FCM_TOKEN_KEY = "fcm_token";
     private static final String CALLERID_DATA_KEY = "callerId";
+    private static final String CALL_REQUEST_KEY = "call_request";
 
     @Nullable
     @BindView(R.id.btn_send_push)
@@ -67,7 +67,7 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
     private boolean mPendingCallRequest = false;
     private String mOriginalCaller;
 
-
+//TODO Review and correct pendingcallrequest approach
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -105,6 +105,11 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
             if (getIntent().hasExtra(CALLERID_DATA_KEY)) {
                 mOriginalCaller = getIntent().getStringExtra(CALLERID_DATA_KEY);
                 mPendingCallRequest = true;
+
+                Intent callScreenActivity = new Intent(this, CallScreenActivity.class);
+                callScreenActivity.putExtra(CALLERID_DATA_KEY,mOriginalCaller);
+                startActivity(callScreenActivity);
+
             }
         }
     }
@@ -180,6 +185,9 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
     private void sendCallRequest() {
 
 
+//        update call status in Db
+        mDBRef.child("callers").child(mAuth.getCurrentUser().getUid()).child(CALL_REQUEST_KEY).setValue("true");
+
         String url = "https://us-central1-talktime-5f9a9.cloudfunctions.net/sendPush";
 
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
@@ -245,22 +253,6 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
     public void onStarted() {
     }
 
-    private void callUser(String callerUid) {
-            Call call = getSinchServiceInterface().callUser(callerUid);
-
-            if (call == null) {
-                // Service failed for some reason, show a Toast and abort
-                Toast.makeText(this, "Service is not started. Try stopping the service and starting it again before "
-                        + "placing a call.", Toast.LENGTH_LONG).show();
-                return;
-            }
-            String callId = call.getCallId();
-            Intent callScreenActivity = new Intent(this, CallScreenActivity.class);
-            callScreenActivity.putExtra(SinchService.CALL_ID, callId);
-            startActivity(callScreenActivity);
-    }
-
-
     @Override
     protected void onServiceConnected() {
 
@@ -271,10 +263,6 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
         if (getSinchServiceInterface() != null && !getSinchServiceInterface().isStarted()) {
             getSinchServiceInterface().startClient(mAuth.getCurrentUser().getUid());
             Toast.makeText(MainActivity.this, "Registered as " + mAuth.getCurrentUser().getUid(), Toast.LENGTH_SHORT).show();
-        }
-        if (mPendingCallRequest) {
-            mPendingCallRequest = false;
-            callUser(mOriginalCaller);
         }
 
     }
