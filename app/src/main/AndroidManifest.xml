@@ -20,10 +20,6 @@
         android:name="android.hardware.microphone"
         android:required="true" />
 
-    <!-- To auto-complete the reportedUser text field in the login form with the reportedUser's emails -->
-    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
-    <uses-permission android:name="android.permission.READ_PROFILE" />
-    <uses-permission android:name="android.permission.READ_CONTACTS" />
 
     <application
         android:allowBackup="true"
@@ -32,7 +28,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <service android:name=".SinchService" />
+        <service android:name=".services.SinchService" />
 
         <activity
             android:name=".ui.CallScreenActivity"
@@ -63,12 +59,12 @@
             android:name=".ui.LoginActivity"
             android:screenOrientation="portrait" />
         <!-- FCM services -->
-        <service android:name=".CallNotificationFCMService">
+        <service android:name=".services.CallNotificationFCMService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
-        <service android:name=".CustomFirebaseInstanceIDService">
+        <service android:name=".services.CustomFirebaseInstanceIDService">
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
@@ -85,11 +81,17 @@
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/colorAccent" />
 
-        <activity android:name=".ui.WaitingCallActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".ui.PostCallActivity"
-            android:screenOrientation="portrait"
-            android:launchMode="singleTask"/>
+        <activity
+            android:name=".ui.WaitingCallActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.PostCallActivity"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.NoResponseActivity"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

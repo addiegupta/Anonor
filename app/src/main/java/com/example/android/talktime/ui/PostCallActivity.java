@@ -70,7 +70,7 @@ public class PostCallActivity extends AppCompatActivity {
         String problemDescription = mProblemEditText.getText().toString().trim();
         Report callerReport = new Report(mRemoteUser,problemDescription);
         mDBRef.child("reports").child(uniqueUserId).setValue(callerReport);
-        Toast.makeText(this, "Reported User", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "User Reported", Toast.LENGTH_SHORT).show();
         dismissActivity();
 
     }

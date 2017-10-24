@@ -12,9 +12,9 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.android.talktime.AudioPlayer;
+import com.example.android.talktime.utils.AudioPlayer;
 import com.example.android.talktime.R;
-import com.example.android.talktime.SinchService;
+import com.example.android.talktime.services.SinchService;
 import com.example.android.talktime.model.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -207,9 +207,11 @@ public class CallScreenActivity extends BaseActivity {
                         + "placing a call.", Toast.LENGTH_LONG).show();
                 return;
             }
+
             mTimer = new Timer();
             mDurationTask = new UpdateCallDurationTask();
             mTimer.schedule(mDurationTask, 0, 500);
+
             mCallId = call.getCallId();
             call.addCallListener(new SinchCallListener());
             mCallState.setText(call.getState().toString());
@@ -231,8 +233,8 @@ public class CallScreenActivity extends BaseActivity {
     @Override
     public void onResume() {
         super.onResume();
-        if (firstResume) {
-            firstResume = false;
+        if (!mIsCaller&&firstResume) {
+                firstResume = false;
         } else {
             mTimer = new Timer();
             mDurationTask = new UpdateCallDurationTask();

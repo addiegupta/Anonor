@@ -1,4 +1,4 @@
-package com.example.android.talktime;
+package com.example.android.talktime.services;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -10,6 +10,7 @@ import android.os.Looper;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
+import com.example.android.talktime.R;
 import com.example.android.talktime.ui.CallScreenActivity;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;

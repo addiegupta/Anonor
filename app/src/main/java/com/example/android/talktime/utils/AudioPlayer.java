@@ -1,4 +1,4 @@
-package com.example.android.talktime;
+package com.example.android.talktime.utils;
 
 import android.content.Context;
 import android.content.res.AssetFileDescriptor;
@@ -8,6 +8,8 @@ import android.media.AudioTrack;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.util.Log;
+
+import com.example.android.talktime.R;
 
 import java.io.FileInputStream;
 import java.io.IOException;

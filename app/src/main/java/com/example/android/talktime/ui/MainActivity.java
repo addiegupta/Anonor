@@ -19,14 +19,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.example.android.talktime.R;
-import com.example.android.talktime.SinchService;
+import com.example.android.talktime.services.SinchService;
+import com.example.android.talktime.utils.CustomUtils;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -37,8 +32,6 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import com.sinch.android.rtc.SinchError;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -51,7 +44,6 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
     private static final String SHARED_PREFS_KEY = "shared_prefs";
     private static final String FCM_TOKEN_KEY = "fcm_token";
     private static final String CALLERID_DATA_KEY = "callerId";
-    private static final String CALL_REQUEST_KEY = "call_request";
 
     @Nullable
     @BindView(R.id.btn_send_push)
@@ -61,7 +53,6 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
     private FirebaseDatabase mUserDatabase;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private DatabaseReference mDBRef;
-    private String mReceiverId;
     private boolean mIsCaller;
     private String mFirebaseIDToken;
     private String mOriginalCaller;
@@ -71,7 +62,6 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
         super.onCreate(savedInstanceState);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-
             handlePermissions();
         }
 
@@ -82,7 +72,8 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
         mUserDatabase = FirebaseDatabase.getInstance();
         mDBRef = mUserDatabase.getReference();
 
-        getFirebaseIDToken();
+        getFirebaseIDToken();;
+
         Timber.plant(new Timber.DebugTree());
         Timber.d("mIsCaller:" + String.valueOf(mIsCaller));
 
@@ -181,34 +172,8 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
 
     private void sendCallRequest() {
 
-
-//        update call status in Db
-        mDBRef.child("callers").child(mAuth.getCurrentUser().getUid()).child(CALL_REQUEST_KEY).setValue("true");
-
-        String url = "https://us-central1-talktime-5f9a9.cloudfunctions.net/sendPush";
-
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Timber.d(error.toString());
-            }
-
-        }) {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> headers = new HashMap<>();
-                headers.put("Authorization", mFirebaseIDToken);
-                return headers;
-            }
-        };
-        Timber.d(stringRequest.toString());
-        Volley.newRequestQueue(this).add(stringRequest);
-
-        startActivity(new Intent(MainActivity.this, WaitingCallActivity.class).addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY));
+        String callerId = mAuth.getCurrentUser().getUid();
+        CustomUtils.sendCallRequest(this,callerId,mDBRef,mFirebaseIDToken);
     }
 
     private void signOutUser() {

@@ -7,7 +7,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 
-import com.example.android.talktime.SinchService;
+import com.example.android.talktime.services.SinchService;
 
     // Sinch code
 public abstract class BaseActivity extends AppCompatActivity implements ServiceConnection{

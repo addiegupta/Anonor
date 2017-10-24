@@ -63,5 +63,7 @@
     <string name="describe_your_problem">Describe your problem</string>
     <string name="report_user">Report User</string>
     <string name="dismiss">Dismiss</string>
+    <string name="no_response_message">Seems like no one is available right now</string>
+    <string name="try_again">Try Again</string>
 
 </resources>

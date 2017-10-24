@@ -10,8 +10,8 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.android.talktime.AudioPlayer;
-import com.example.android.talktime.SinchService;
+import com.example.android.talktime.utils.AudioPlayer;
+import com.example.android.talktime.services.SinchService;
 import com.example.android.talktime.R;
 import com.sinch.android.rtc.MissingPermissionException;
 import com.sinch.android.rtc.PushPair;
