@@ -20,7 +20,7 @@
         android:name="android.hardware.microphone"
         android:required="true" />
 
-    <!-- To auto-complete the email text field in the login form with the user's emails -->
+    <!-- To auto-complete the reportedUser text field in the login form with the reportedUser's emails -->
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.READ_PROFILE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
@@ -54,6 +54,7 @@
         </activity>
         <activity
             android:name=".ui.MainActivity"
+            android:launchMode="singleTask"
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.ResetPasswordActivity"
@@ -84,7 +85,11 @@
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/colorAccent" />
 
-        <activity android:name=".ui.WaitingCallActivity"></activity>
+        <activity android:name=".ui.WaitingCallActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ui.PostCallActivity"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTask"/>
     </application>
 
 </manifest>

@@ -109,7 +109,6 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
                 Intent callScreenActivity = new Intent(this, CallScreenActivity.class);
                 callScreenActivity.putExtra(CALLERID_DATA_KEY,mOriginalCaller);
                 startActivity(callScreenActivity);
-
             }
         }
     }

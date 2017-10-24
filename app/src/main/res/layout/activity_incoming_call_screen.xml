@@ -20,7 +20,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_margin="14dp"
-            android:text="Sample user"
+            android:text="Sample reportedUser"
             android:textColor="@color/sinch_purple"
             android:textSize="28sp"/>
 

@@ -1,6 +1,7 @@
 package com.example.android.talktime.ui;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.os.Bundle;
@@ -50,6 +51,7 @@ public class CallScreenActivity extends BaseActivity {
     private static final String DB_DURATION_KEY = "duration";
     private static final String CALL_REQUEST_KEY = "call_request";
     private boolean mIsCaller;
+    private boolean firstResume = true;
     private boolean mServiceConnected = false;
 
     private String mCallId;
@@ -62,6 +64,7 @@ public class CallScreenActivity extends BaseActivity {
     Button mEndCallButton;
     private boolean mPendingCallRequest = false;
     private String mOriginalCaller;
+    private String mOriginalReceiver;
     private FirebaseAuth mAuth;
     private FirebaseDatabase mDatabase;
     private DatabaseReference mDBRef;
@@ -145,6 +148,8 @@ public class CallScreenActivity extends BaseActivity {
                     }
                 } else {
                     Toast.makeText(CallScreenActivity.this, "Too late", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(CallScreenActivity.this,MainActivity.class));
+                    finish();
                 }
             }
 
@@ -190,7 +195,9 @@ public class CallScreenActivity extends BaseActivity {
                 call.answer();
                 call.addCallListener(new SinchCallListener());
                 mCallState.setText(call.getState().toString());
+                mOriginalReceiver = call.getRemoteUserId();
             } else {
+                Toast.makeText(this, "An error occured", Toast.LENGTH_SHORT).show();
                 Timber.e("Started with invalid callId, aborting.");
                 finish();
             }
@@ -209,6 +216,9 @@ public class CallScreenActivity extends BaseActivity {
                         + "placing a call.", Toast.LENGTH_LONG).show();
                 return;
             }
+            mTimer = new Timer();
+            mDurationTask = new UpdateCallDurationTask();
+            mTimer.schedule(mDurationTask, 0, 500);
             mCallId = call.getCallId();
             call.addCallListener(new SinchCallListener());
             mCallState.setText(call.getState().toString());
@@ -221,16 +231,23 @@ public class CallScreenActivity extends BaseActivity {
     @Override
     public void onPause() {
         super.onPause();
+        if (mDurationTask!=null){
         mDurationTask.cancel();
         mTimer.cancel();
+        }
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        if (firstResume){
+            firstResume = false;
+        }
+        else{
         mTimer = new Timer();
         mDurationTask = new UpdateCallDurationTask();
         mTimer.schedule(mDurationTask, 0, 500);
+        }
     }
 
     @Override
@@ -244,6 +261,14 @@ public class CallScreenActivity extends BaseActivity {
         if (call != null) {
             call.hangup();
         }
+        Intent postCallIntent = new Intent(CallScreenActivity.this,PostCallActivity.class);
+        if (mIsCaller){
+            postCallIntent.putExtra(CALLERID_DATA_KEY,mOriginalReceiver);
+        }
+        else {
+            postCallIntent.putExtra(CALLERID_DATA_KEY,mOriginalCaller);
+        }
+        startActivity(postCallIntent);
         finish();
     }
 
@@ -290,7 +315,6 @@ public class CallScreenActivity extends BaseActivity {
             long duration = call.getDetails().getDuration();
 
             updateDatabaseCallDuration(duration);
-
 
             endCall();
         }

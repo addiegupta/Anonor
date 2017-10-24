@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.android.talktime.ui.PostCallActivity">
+
+    <TextView
+        android:id="@+id/tv_post_call_disconnected_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="60dp"
+        android:text="@string/call_disconnected"
+        android:textSize="22sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_post_call_report_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="41dp"
+        android:text="@string/post_call_report_message"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btn_dismiss" />
+
+    <EditText
+        android:id="@+id/et_post_call_problem"
+        android:layout_width="238dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="0dp"
+        android:layout_marginRight="0dp"
+        android:inputType="textCapSentences|textMultiLine"
+        android:layout_marginTop="36dp"
+        android:hint="@string/describe_your_problem"
+        android:textSize="14sp"
+        app:layout_constraintLeft_toLeftOf="@+id/tv_post_call_report_message"
+        app:layout_constraintRight_toRightOf="@+id/tv_post_call_report_message"
+        app:layout_constraintTop_toBottomOf="@+id/tv_post_call_report_message" />
+
+    <Button
+        android:id="@+id/btn_report_user"
+        style="@style/Base.Widget.AppCompat.Button.Borderless"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="48dp"
+        android:text="@string/report_user"
+        android:textColor="@color/colorAccent"
+        app:layout_constraintLeft_toLeftOf="@+id/et_post_call_problem"
+        app:layout_constraintRight_toRightOf="@+id/et_post_call_problem"
+        app:layout_constraintTop_toBottomOf="@+id/et_post_call_problem"
+        app:layout_constraintHorizontal_bias="0.504" />
+
+    <Button
+        android:id="@+id/btn_dismiss"
+        style="@style/Base.Widget.AppCompat.Button.Borderless"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="39dp"
+        android:text="@string/dismiss"
+        android:textColor="@color/colorAccent"
+        android:textSize="20sp"
+        app:layout_constraintLeft_toLeftOf="@+id/tv_post_call_disconnected_message"
+        app:layout_constraintRight_toRightOf="@+id/tv_post_call_disconnected_message"
+        app:layout_constraintTop_toBottomOf="@+id/tv_post_call_disconnected_message" />
+</android.support.constraint.ConstraintLayout>
