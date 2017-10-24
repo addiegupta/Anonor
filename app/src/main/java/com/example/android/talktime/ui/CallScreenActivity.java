@@ -3,19 +3,25 @@ package com.example.android.talktime.ui;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Looper;
+import android.os.PowerManager;
 import android.support.v4.app.ActivityCompat;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.android.talktime.utils.AudioPlayer;
 import com.example.android.talktime.R;
-import com.example.android.talktime.services.SinchService;
 import com.example.android.talktime.model.User;
+import com.example.android.talktime.services.SinchService;
+import com.example.android.talktime.utils.AudioPlayer;
+import com.example.android.talktime.utils.NoResponseHandler;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -38,7 +44,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import timber.log.Timber;
 
-public class CallScreenActivity extends BaseActivity {
+public class CallScreenActivity extends BaseActivity implements SensorEventListener {
 
     private AudioPlayer mAudioPlayer;
     private Timer mTimer;
@@ -68,6 +74,10 @@ public class CallScreenActivity extends BaseActivity {
     private FirebaseDatabase mDatabase;
     private DatabaseReference mDBRef;
     private long mTotalDuration;
+    private SensorManager mSensorManager;
+    private Sensor mProximity;
+    private PowerManager mPowerManager;
+    private PowerManager.WakeLock mWakeLock;
 
     private class UpdateCallDurationTask extends TimerTask {
 
@@ -86,28 +96,21 @@ public class CallScreenActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_call_screen);
-        ButterKnife.bind(this);
 
+        ButterKnife.bind(this);
         Timber.plant(new Timber.DebugTree());
+
+        //TODO Check requirement
         mAudioPlayer = new AudioPlayer(this);
 
         SharedPreferences preferences = getSharedPreferences(SHARED_PREFS_KEY, Context.MODE_PRIVATE);
         mIsCaller = preferences.getBoolean(IS_CALLER_KEY, true);
 
-        mAuth = FirebaseAuth.getInstance();
-        mDatabase = FirebaseDatabase.getInstance();
-        mDBRef = mDatabase.getReference();
+        initialiseAuthAndDatabaseReference();
 
-        // Call picked up
-        if (getIntent().hasExtra(CALLERID_DATA_KEY)) {
-            mOriginalCaller = getIntent().getStringExtra(CALLERID_DATA_KEY);
-            handleCall(mOriginalCaller);
-        }
-        //Call created by caller
-        else {
-            mCallId = getIntent().getStringExtra(SinchService.CALL_ID);
-            Timber.d(mCallId);
-        }
+        setupProximitySensor();
+
+        handleCall();
 
         mEndCallButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -116,6 +119,11 @@ public class CallScreenActivity extends BaseActivity {
             }
         });
 
+        getDurationInitialValue();
+
+    }
+
+    private void getDurationInitialValue() {
 
         //Get duration value
         mDBRef.addValueEventListener(new ValueEventListener() {
@@ -132,7 +140,67 @@ public class CallScreenActivity extends BaseActivity {
 
     }
 
-    private void handleCall(final String callerId) {
+    private  void handleCall(){
+        // Call picked up
+        if (getIntent().hasExtra(CALLERID_DATA_KEY)) {
+            mOriginalCaller = getIntent().getStringExtra(CALLERID_DATA_KEY);
+            createCallOrTooLate(mOriginalCaller);
+        }
+        //Call created by caller
+        else {
+            //Stop handler from creating NoResponseActivity
+            NoResponseHandler.stopHandler();
+
+            mCallId = getIntent().getStringExtra(SinchService.CALL_ID);
+            Timber.d(mCallId);
+        }
+    }
+
+    private void initialiseAuthAndDatabaseReference(){
+        mAuth = FirebaseAuth.getInstance();
+        mDatabase = FirebaseDatabase.getInstance();
+        mDBRef = mDatabase.getReference();
+
+    }
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+
+        if (event.values[0] < event.sensor.getMaximumRange() /*face near phone*/) {
+
+            if (!mWakeLock.isHeld()) {
+                mWakeLock.acquire();
+            }
+        } else {
+            if (mWakeLock.isHeld()) {
+                mWakeLock.release();
+            }
+        }
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+    }
+
+    private void setupProximitySensor() {
+
+        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        mProximity = mSensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
+
+        if (mProximity != null) {
+            mPowerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
+
+            int field = 0x00000020;
+            try {
+                // Yeah, this is hidden field.
+                field = PowerManager.class.getField("PROXIMITY_SCREEN_OFF_WAKE_LOCK").getInt(null);
+            } catch (Throwable ignored) {
+            }
+            mWakeLock = mPowerManager.newWakeLock(field, getLocalClassName());
+        }
+    }
+
+    private void createCallOrTooLate(final String callerId) {
 
 
         Query query = mDBRef.child("callers");
@@ -224,6 +292,12 @@ public class CallScreenActivity extends BaseActivity {
     @Override
     public void onPause() {
         super.onPause();
+
+        //TODO Change to keeping wakelock even when activity is paused (maybe)
+        if (mProximity != null) {
+            mSensorManager.unregisterListener(this);
+        }
+
         if (mDurationTask != null) {
             mDurationTask.cancel();
             mTimer.cancel();
@@ -233,8 +307,13 @@ public class CallScreenActivity extends BaseActivity {
     @Override
     public void onResume() {
         super.onResume();
-        if (!mIsCaller&&firstResume) {
-                firstResume = false;
+
+        if (mProximity != null) {
+            mSensorManager.registerListener(this, mProximity, SensorManager.SENSOR_DELAY_NORMAL);
+        }
+
+        if (!mIsCaller && firstResume) {
+            firstResume = false;
         } else {
             mTimer = new Timer();
             mDurationTask = new UpdateCallDurationTask();
