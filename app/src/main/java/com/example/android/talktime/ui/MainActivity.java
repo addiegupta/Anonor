@@ -64,10 +64,8 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
     private String mReceiverId;
     private boolean mIsCaller;
     private String mFirebaseIDToken;
-    private boolean mPendingCallRequest = false;
     private String mOriginalCaller;
 
-//TODO Review and correct pendingcallrequest approach
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -104,10 +102,10 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
 
             if (getIntent().hasExtra(CALLERID_DATA_KEY)) {
                 mOriginalCaller = getIntent().getStringExtra(CALLERID_DATA_KEY);
-                mPendingCallRequest = true;
 
+                // Start CallScreenActivity
                 Intent callScreenActivity = new Intent(this, CallScreenActivity.class);
-                callScreenActivity.putExtra(CALLERID_DATA_KEY,mOriginalCaller);
+                callScreenActivity.putExtra(CALLERID_DATA_KEY, mOriginalCaller);
                 startActivity(callScreenActivity);
             }
         }

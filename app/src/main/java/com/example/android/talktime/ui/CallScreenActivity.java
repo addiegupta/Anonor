@@ -38,7 +38,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import timber.log.Timber;
 
-// Sinch code
 public class CallScreenActivity extends BaseActivity {
 
     private AudioPlayer mAudioPlayer;
@@ -62,7 +61,7 @@ public class CallScreenActivity extends BaseActivity {
     TextView mCallState;
     @BindView(R.id.hangupButton)
     Button mEndCallButton;
-    private boolean mPendingCallRequest = false;
+
     private String mOriginalCaller;
     private String mOriginalReceiver;
     private FirebaseAuth mAuth;
@@ -142,13 +141,12 @@ public class CallScreenActivity extends BaseActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.child(callerId).child(CALL_REQUEST_KEY).getValue().equals("true")) {
                     mDBRef.child("callers").child(callerId).child(CALL_REQUEST_KEY).setValue("false");
-                    mPendingCallRequest = true;
                     if (mServiceConnected) {
                         createCall();
                     }
                 } else {
                     Toast.makeText(CallScreenActivity.this, "Too late", Toast.LENGTH_SHORT).show();
-                    startActivity(new Intent(CallScreenActivity.this,MainActivity.class));
+                    startActivity(new Intent(CallScreenActivity.this, MainActivity.class));
                     finish();
                 }
             }
@@ -177,19 +175,12 @@ public class CallScreenActivity extends BaseActivity {
 
     @Override
     public void onServiceConnected() {
-
+        mServiceConnected = true;
         if (getSinchServiceInterface() != null && !getSinchServiceInterface().isStarted()) {
             getSinchServiceInterface().startClient(mAuth.getCurrentUser().getUid());
             Toast.makeText(CallScreenActivity.this, "Registered as " + mAuth.getCurrentUser().getUid(), Toast.LENGTH_SHORT).show();
         }
-        if (!mIsCaller) {
-
-            mServiceConnected = true;
-            if (mPendingCallRequest) {
-                createCall();
-            }
-        } else {
-
+        if (mIsCaller) {
             Call call = getSinchServiceInterface().getCall(mCallId);
             if (call != null) {
                 call.answer();
@@ -231,22 +222,21 @@ public class CallScreenActivity extends BaseActivity {
     @Override
     public void onPause() {
         super.onPause();
-        if (mDurationTask!=null){
-        mDurationTask.cancel();
-        mTimer.cancel();
+        if (mDurationTask != null) {
+            mDurationTask.cancel();
+            mTimer.cancel();
         }
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        if (firstResume){
+        if (firstResume) {
             firstResume = false;
-        }
-        else{
-        mTimer = new Timer();
-        mDurationTask = new UpdateCallDurationTask();
-        mTimer.schedule(mDurationTask, 0, 500);
+        } else {
+            mTimer = new Timer();
+            mDurationTask = new UpdateCallDurationTask();
+            mTimer.schedule(mDurationTask, 0, 500);
         }
     }
 
@@ -261,12 +251,11 @@ public class CallScreenActivity extends BaseActivity {
         if (call != null) {
             call.hangup();
         }
-        Intent postCallIntent = new Intent(CallScreenActivity.this,PostCallActivity.class);
-        if (mIsCaller){
-            postCallIntent.putExtra(CALLERID_DATA_KEY,mOriginalReceiver);
-        }
-        else {
-            postCallIntent.putExtra(CALLERID_DATA_KEY,mOriginalCaller);
+        Intent postCallIntent = new Intent(CallScreenActivity.this, PostCallActivity.class);
+        if (mIsCaller) {
+            postCallIntent.putExtra(CALLERID_DATA_KEY, mOriginalReceiver);
+        } else {
+            postCallIntent.putExtra(CALLERID_DATA_KEY, mOriginalCaller);
         }
         startActivity(postCallIntent);
         finish();
