@@ -59,6 +59,8 @@ public class CallScreenActivity extends BaseActivity implements SensorEventListe
     private boolean firstResume = true;
     private boolean mServiceConnected = false;
 
+    private AudioManager mAudioManager;
+
     private String mCallId;
 
     @BindView(R.id.callDuration)
@@ -103,6 +105,8 @@ public class CallScreenActivity extends BaseActivity implements SensorEventListe
         //TODO Check requirement
         mAudioPlayer = new AudioPlayer(this);
 
+        mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+
         SharedPreferences preferences = getSharedPreferences(SHARED_PREFS_KEY, Context.MODE_PRIVATE);
         mIsCaller = preferences.getBoolean(IS_CALLER_KEY, true);
 
@@ -140,7 +144,7 @@ public class CallScreenActivity extends BaseActivity implements SensorEventListe
 
     }
 
-    private  void handleCall(){
+    private void handleCall() {
         // Call picked up
         if (getIntent().hasExtra(CALLERID_DATA_KEY)) {
             mOriginalCaller = getIntent().getStringExtra(CALLERID_DATA_KEY);
@@ -156,12 +160,13 @@ public class CallScreenActivity extends BaseActivity implements SensorEventListe
         }
     }
 
-    private void initialiseAuthAndDatabaseReference(){
+    private void initialiseAuthAndDatabaseReference() {
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance();
         mDBRef = mDatabase.getReference();
 
     }
+
     @Override
     public void onSensorChanged(SensorEvent event) {
 
@@ -262,7 +267,6 @@ public class CallScreenActivity extends BaseActivity implements SensorEventListe
             }
         }
     }
-
 
     private void createCall() {
         try {
@@ -372,6 +376,15 @@ public class CallScreenActivity extends BaseActivity implements SensorEventListe
         }).start();
     }
 
+    AudioManager.OnAudioFocusChangeListener mFocusChangeListener = new AudioManager.OnAudioFocusChangeListener() {
+        @Override
+        public void onAudioFocusChange(int focusChange) {
+            if (focusChange == AudioManager.AUDIOFOCUS_LOSS) {
+                setVolumeControlStream(AudioManager.USE_DEFAULT_STREAM_TYPE);
+            }
+        }
+    };
+
     private class SinchCallListener implements CallListener {
 
         @Override
@@ -379,10 +392,17 @@ public class CallScreenActivity extends BaseActivity implements SensorEventListe
             CallEndCause cause = call.getDetails().getEndCause();
             Timber.d("Call ended. Reason: " + cause.toString());
             mAudioPlayer.stopProgressTone();
-            setVolumeControlStream(AudioManager.USE_DEFAULT_STREAM_TYPE);
+
+            // Abandons audio focus so that any interrupted app can gain audio focus
+            mAudioManager.abandonAudioFocus(mFocusChangeListener);
+
             String endMsg = "Call ended: " + call.getDetails().toString();
             Toast.makeText(CallScreenActivity.this, endMsg, Toast.LENGTH_LONG).show();
             long duration = call.getDetails().getDuration();
+
+            if (mProximity != null) {
+                mSensorManager.unregisterListener(CallScreenActivity.this);
+            }
 
             updateDatabaseCallDuration(duration);
 
@@ -392,9 +412,11 @@ public class CallScreenActivity extends BaseActivity implements SensorEventListe
         @Override
         public void onCallEstablished(Call call) {
             Timber.d("Call established");
+            Toast.makeText(CallScreenActivity.this, "Call Established", Toast.LENGTH_SHORT).show();
+            mAudioManager.requestAudioFocus(mFocusChangeListener,
+                    AudioManager.STREAM_VOICE_CALL, AudioManager.AUDIOFOCUS_GAIN_TRANSIENT);
             mAudioPlayer.stopProgressTone();
             mCallState.setText(call.getState().toString());
-            setVolumeControlStream(AudioManager.STREAM_VOICE_CALL);
         }
 
         @Override
@@ -405,9 +427,7 @@ public class CallScreenActivity extends BaseActivity implements SensorEventListe
 
         @Override
         public void onShouldSendPushNotification(Call call, List<PushPair> pushPairs) {
-            // Send a push through your push provider here, e.g. GCM
-
-
+            // Send a push through your push provider here, e.g. FCM
         }
 
     }
