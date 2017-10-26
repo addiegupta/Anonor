@@ -1,75 +1,126 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context="com.example.android.talktime.ui.PostCallActivity">
 
-    <TextView
-        android:id="@+id/tv_post_call_disconnected_message"
-        android:layout_width="wrap_content"
+    <android.support.v7.widget.CardView
+        android:id="@+id/card_post_call_disconnected"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginTop="60dp"
-        android:text="@string/call_disconnected"
-        android:textSize="22sp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_gravity="center_horizontal"
+        android:layout_margin="16dp">
 
-    <TextView
-        android:id="@+id/tv_post_call_report_message"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="41dp"
-        android:text="@string/post_call_report_message"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_dismiss" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-    <EditText
-        android:id="@+id/et_post_call_problem"
-        android:layout_width="238dp"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="0dp"
-        android:layout_marginRight="0dp"
-        android:inputType="textCapSentences|textMultiLine"
-        android:layout_marginTop="36dp"
-        android:hint="@string/describe_your_problem"
-        android:textSize="14sp"
-        app:layout_constraintLeft_toLeftOf="@+id/tv_post_call_report_message"
-        app:layout_constraintRight_toRightOf="@+id/tv_post_call_report_message"
-        app:layout_constraintTop_toBottomOf="@+id/tv_post_call_report_message" />
+            <TextView
+                android:id="@+id/tv_post_call_disconnected_message"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="32dp"
+                android:text="@string/call_disconnected"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Widget.ActionBar.Title"
+                android:textSize="22sp" />
 
-    <Button
-        android:id="@+id/btn_report_user"
-        style="@style/Base.Widget.AppCompat.Button.Borderless"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginTop="48dp"
-        android:text="@string/report_user"
-        android:textColor="@color/colorAccent"
-        app:layout_constraintLeft_toLeftOf="@+id/et_post_call_problem"
-        app:layout_constraintRight_toRightOf="@+id/et_post_call_problem"
-        app:layout_constraintTop_toBottomOf="@+id/et_post_call_problem"
-        app:layout_constraintHorizontal_bias="0.504" />
+            <Button
+                android:id="@+id/btn_dismiss"
+                style="@style/Base.Widget.AppCompat.Button.Borderless"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="16dp"
+                android:text="@string/dismiss"
+                android:textColor="@color/colorAccent"
+                android:textSize="20sp" />
 
-    <Button
-        android:id="@+id/btn_dismiss"
-        style="@style/Base.Widget.AppCompat.Button.Borderless"
-        android:layout_width="wrap_content"
+        </LinearLayout>
+    </android.support.v7.widget.CardView>
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/card_post_call_report_problem"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginTop="39dp"
-        android:text="@string/dismiss"
-        android:textColor="@color/colorAccent"
-        android:textSize="20sp"
-        app:layout_constraintLeft_toLeftOf="@+id/tv_post_call_disconnected_message"
-        app:layout_constraintRight_toRightOf="@+id/tv_post_call_disconnected_message"
-        app:layout_constraintTop_toBottomOf="@+id/tv_post_call_disconnected_message" />
-</android.support.constraint.ConstraintLayout>
+        android:layout_margin="16dp"
+        android:gravity="center_horizontal">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_post_call_report_message_1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="16dp"
+                android:text="@string/post_call_report_message_pt1"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Widget.ActionBar.Title"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/tv_post_call_report_message_2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="@string/post_call_report_message_pt2"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Widget.ActionBar.Title"
+                android:textSize="16sp" />
+
+
+            <EditText
+                android:id="@+id/et_post_call_problem"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginTop="16dp"
+                android:hint="@string/describe_your_problem"
+                android:inputType="textCapSentences|textMultiLine"
+                android:textSize="14sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginTop="16dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tv_report_user_message"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="4"
+                    android:text="@string/problem_involving_caller" />
+
+                <CheckBox
+                    android:id="@+id/checkbox_report_user"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btn_submit_problem"
+                style="@style/Base.Widget.AppCompat.Button.Borderless"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="16dp"
+                android:layout_marginTop="16dp"
+                android:text="@string/submit_problem"
+                android:textColor="@color/colorAccent" />
+
+        </LinearLayout>
+    </android.support.v7.widget.CardView>
+
+</LinearLayout>

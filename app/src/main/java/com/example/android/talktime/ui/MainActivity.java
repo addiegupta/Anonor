@@ -45,9 +45,6 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
     private static final String FCM_TOKEN_KEY = "fcm_token";
     private static final String CALLERID_DATA_KEY = "callerId";
 
-    @Nullable
-    @BindView(R.id.btn_send_push)
-    Button mSendPushButton;
 
     private FirebaseAuth mAuth;
     private FirebaseDatabase mUserDatabase;
@@ -57,6 +54,9 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
     private String mFirebaseIDToken;
     private String mOriginalCaller;
 
+    @Nullable
+    @BindView(R.id.btn_send_push)
+    Button mSendPushButton;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

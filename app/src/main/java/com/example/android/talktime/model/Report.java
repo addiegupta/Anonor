@@ -1,18 +1,17 @@
 package com.example.android.talktime.model;
 
-/**
- * Created by addie on 24-10-2017.
- */
 
 public class Report {
 
-    public String reportedUser;
+    public String remoteUser;
     public String problem;
+    public boolean reportUser;
 
-    public Report(String reportedUser, String problem) {
+    public Report(String remoteUser, String problem,boolean reportUser) {
 
-        this.reportedUser = reportedUser;
+        this.remoteUser = remoteUser;
         this.problem = problem;
+        this.reportUser = reportUser;
     }
 
     public Report() {
