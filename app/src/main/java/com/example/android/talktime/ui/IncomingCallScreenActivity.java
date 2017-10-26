@@ -44,8 +44,9 @@ public class IncomingCallScreenActivity extends BaseActivity {
         setContentView(R.layout.activity_incoming_call_screen);
 
         ButterKnife.bind(this);
-        Timber.plant(new Timber.DebugTree());
-
+        if(Timber.treeCount() <= 0){
+            Timber.plant(new Timber.DebugTree());
+        }
         mAnswerButton.setOnClickListener(mClickListener);
         mDeclineButton.setOnClickListener(mClickListener);
 

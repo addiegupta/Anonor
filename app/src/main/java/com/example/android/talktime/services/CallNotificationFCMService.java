@@ -15,6 +15,8 @@ import com.example.android.talktime.ui.CallScreenActivity;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+import timber.log.Timber;
+
 public class CallNotificationFCMService extends FirebaseMessagingService {
     private static final String TAG = "FCMService";
 
@@ -60,19 +62,23 @@ public class CallNotificationFCMService extends FirebaseMessagingService {
 
         // using the same tag and Id causes the new notification to replace an existing one
         String tag = String.valueOf(callerId);
-        mNotificationManager.notify(tag,1, notificationBuilder.build());
+        String idString = Long.toString(System.currentTimeMillis());
+        int id = Integer.valueOf(idString.substring(idString.length()-5));
+        Timber.d("Notification id" + id);
 
-        removeNotification(tag);
+        mNotificationManager.notify(tag,id, notificationBuilder.build());
+
+        removeNotification(tag,id);
     }
 
-    private void removeNotification(final String tag) {
+    private void removeNotification(final String tag, final int id) {
         Handler handler = new Handler(Looper.getMainLooper());
         long delayInMilliseconds = 30000;
         final NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         handler.postDelayed(new Runnable() {
             public void run() {
-                notificationManager.cancel(tag,1);
+                notificationManager.cancel(tag,id);
             }
         }, delayInMilliseconds);
     }

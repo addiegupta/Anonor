@@ -74,7 +74,9 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
 
         getFirebaseIDToken();;
 
-        Timber.plant(new Timber.DebugTree());
+        if(Timber.treeCount() <= 0){
+            Timber.plant(new Timber.DebugTree());
+        }
         Timber.d("mIsCaller:" + String.valueOf(mIsCaller));
 
         if (mIsCaller) {

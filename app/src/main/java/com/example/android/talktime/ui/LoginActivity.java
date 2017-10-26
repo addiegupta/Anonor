@@ -60,8 +60,10 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Timber.plant(new Timber.DebugTree());
 
+        if(Timber.treeCount() <= 0){
+            Timber.plant(new Timber.DebugTree());
+        }
         //Get Firebase auth instance
         auth = FirebaseAuth.getInstance();
 

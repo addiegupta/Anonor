@@ -63,8 +63,10 @@ public class SignupActivity extends AppCompatActivity {
         setContentView(R.layout.activity_sign_up);
 
         ButterKnife.bind(this);
-        Timber.plant(new Timber.DebugTree());
 
+        if(Timber.treeCount() <= 0){
+            Timber.plant(new Timber.DebugTree());
+        }
         //Get Firebase mAuth instance
         mAuth = FirebaseAuth.getInstance();
 

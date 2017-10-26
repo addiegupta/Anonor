@@ -108,7 +108,12 @@ public class CallScreenActivity extends BaseActivity implements SensorEventListe
         setContentView(R.layout.activity_call_screen);
 
         ButterKnife.bind(this);
+
+        if(Timber.treeCount() <= 0){
         Timber.plant(new Timber.DebugTree());
+        }
+
+        Timber.d("CallScreenActivity launched");
 
         //TODO Check requirement
         mAudioPlayer = new AudioPlayer(this);
@@ -192,10 +197,13 @@ public class CallScreenActivity extends BaseActivity implements SensorEventListe
         // Call picked up
         if (getIntent().hasExtra(CALLERID_DATA_KEY)) {
             mOriginalCaller = getIntent().getStringExtra(CALLERID_DATA_KEY);
+            Timber.d("Intent has extra ");
+            Timber.d(mOriginalCaller);
             createCallOrTooLate(mOriginalCaller);
         }
         //Call created by caller
         else {
+
             //Stop handler from creating NoResponseActivity
             NoResponseHandler.stopHandler();
 
@@ -465,7 +473,10 @@ public class CallScreenActivity extends BaseActivity implements SensorEventListe
             mAudioManager.requestAudioFocus(mFocusChangeListener,
                     AudioManager.STREAM_VOICE_CALL, AudioManager.AUDIOFOCUS_GAIN_TRANSIENT);
             mAudioManager.setMode(AudioManager.MODE_IN_CALL);
-            mAudioManager.setSpeakerphoneOn(false);
+            mIsSpeakerPhone = false;
+            mIsMicMuted = false;
+            mAudioManager.setSpeakerphoneOn(mIsSpeakerPhone);
+            mAudioManager.setMicrophoneMute(mIsMicMuted);
             mAudioPlayer.stopProgressTone();
             mCallState.setText(call.getState().toString());
         }
