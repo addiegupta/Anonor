@@ -57,6 +57,7 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
     @Nullable
     @BindView(R.id.btn_send_push)
     Button mSendPushButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,11 +73,9 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
         mUserDatabase = FirebaseDatabase.getInstance();
         mDBRef = mUserDatabase.getReference();
 
-        getFirebaseIDToken();;
+        getFirebaseIDToken();
 
-        if(Timber.treeCount() <= 0){
-            Timber.plant(new Timber.DebugTree());
-        }
+        Timber.plant(new Timber.DebugTree());
         Timber.d("mIsCaller:" + String.valueOf(mIsCaller));
 
         if (mIsCaller) {
@@ -134,6 +133,12 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
                 });
     }
 
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Timber.uprootAll();
+    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
@@ -175,7 +180,7 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
     private void sendCallRequest() {
 
         String callerId = mAuth.getCurrentUser().getUid();
-        CustomUtils.sendCallRequest(this,callerId,mDBRef,mFirebaseIDToken);
+        CustomUtils.sendCallRequest(this, callerId, mDBRef, mFirebaseIDToken);
     }
 
     private void signOutUser() {

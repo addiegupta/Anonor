@@ -17,7 +17,6 @@ import com.google.firebase.auth.FirebaseAuth;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import timber.log.Timber;
 
 public class ResetPasswordActivity extends AppCompatActivity {
 
@@ -38,9 +37,6 @@ public class ResetPasswordActivity extends AppCompatActivity {
         setContentView(R.layout.activity_reset_password);
         ButterKnife.bind(this);
 
-        if(Timber.treeCount() <= 0){
-            Timber.plant(new Timber.DebugTree());
-        }
         auth = FirebaseAuth.getInstance();
 
         mButtonBack.setOnClickListener(new View.OnClickListener() {

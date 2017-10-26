@@ -44,9 +44,7 @@ public class IncomingCallScreenActivity extends BaseActivity {
         setContentView(R.layout.activity_incoming_call_screen);
 
         ButterKnife.bind(this);
-        if(Timber.treeCount() <= 0){
-            Timber.plant(new Timber.DebugTree());
-        }
+
         mAnswerButton.setOnClickListener(mClickListener);
         mDeclineButton.setOnClickListener(mClickListener);
 
@@ -90,7 +88,7 @@ public class IncomingCallScreenActivity extends BaseActivity {
         if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             Toast.makeText(this, getString(R.string.may_answer_call_now), Toast.LENGTH_LONG).show();
         } else {
-            Toast.makeText(this,getString(R.string.mic_permission_required), Toast
+            Toast.makeText(this, getString(R.string.mic_permission_required), Toast
                     .LENGTH_LONG).show();
         }
     }
@@ -145,4 +143,5 @@ public class IncomingCallScreenActivity extends BaseActivity {
             }
         }
     };
+
 }

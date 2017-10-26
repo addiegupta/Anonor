@@ -109,10 +109,6 @@ public class CallScreenActivity extends BaseActivity implements SensorEventListe
 
         ButterKnife.bind(this);
 
-        if(Timber.treeCount() <= 0){
-        Timber.plant(new Timber.DebugTree());
-        }
-
         Timber.d("CallScreenActivity launched");
 
         //TODO Check requirement

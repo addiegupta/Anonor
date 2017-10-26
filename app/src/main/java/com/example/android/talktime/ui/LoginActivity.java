@@ -28,7 +28,6 @@ import com.google.firebase.database.ValueEventListener;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import timber.log.Timber;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -61,9 +60,6 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
 
-        if(Timber.treeCount() <= 0){
-            Timber.plant(new Timber.DebugTree());
-        }
         //Get Firebase auth instance
         auth = FirebaseAuth.getInstance();
 
