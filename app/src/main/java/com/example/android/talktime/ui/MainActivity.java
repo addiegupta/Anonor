@@ -197,6 +197,7 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
                     mAuth.signOut();
                 } catch (IOException e) {
                     e.printStackTrace();
+                    Toast.makeText(MainActivity.this, "Error signing out", Toast.LENGTH_SHORT).show();
                 }
             }
         }).start();

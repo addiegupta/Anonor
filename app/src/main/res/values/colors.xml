@@ -9,5 +9,8 @@
     <color name="sinch_purple">#ff63029d</color>
     <color name="off_white">#fffafafa</color>
     <color name="greyish">#fff2f1f2</color>
-
+    
+    <color name="midnight_blue">#2c3e50</color>
+    <color name="alizarin_orange">#e74c3c</color>
+    <color name="dark_red">#D32F2F</color>
 </resources>

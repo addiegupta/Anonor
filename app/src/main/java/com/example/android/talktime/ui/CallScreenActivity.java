@@ -8,12 +8,14 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.media.AudioManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
 import android.os.PowerManager;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.view.View;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -68,7 +70,11 @@ public class CallScreenActivity extends BaseActivity implements SensorEventListe
     @BindView(R.id.callState)
     TextView mCallState;
     @BindView(R.id.hangupButton)
-    Button mEndCallButton;
+    FloatingActionButton mEndCallButton;
+    @BindView(R.id.btn_speakerphone)
+    ImageButton mSpeakerPhoneButton;
+    @BindView(R.id.btn_microphone)
+    ImageButton mMicrophoneButton;
 
     private String mOriginalCaller;
     private String mOriginalReceiver;
@@ -80,6 +86,8 @@ public class CallScreenActivity extends BaseActivity implements SensorEventListe
     private Sensor mProximity;
     private PowerManager mPowerManager;
     private PowerManager.WakeLock mWakeLock;
+    private boolean mIsSpeakerPhone = false;
+    private boolean mIsMicMuted = false;
 
     private class UpdateCallDurationTask extends TimerTask {
 
@@ -120,6 +128,42 @@ public class CallScreenActivity extends BaseActivity implements SensorEventListe
             @Override
             public void onClick(View v) {
                 endCall();
+            }
+        });
+
+        mSpeakerPhoneButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mAudioManager.setSpeakerphoneOn(!mIsSpeakerPhone);
+                mIsSpeakerPhone = !mIsSpeakerPhone;
+                String toastMessage;
+                if (mIsSpeakerPhone){
+                    toastMessage = getString(R.string.speakerphone_on);
+                    mSpeakerPhoneButton.setImageResource(R.drawable.speakerphone_selected);
+                }
+                else {
+                    toastMessage = getString(R.string.speakerphone_off);
+                    mSpeakerPhoneButton.setImageResource(R.drawable.ic_speakerphone);
+                }
+                Toast.makeText(CallScreenActivity.this, toastMessage, Toast.LENGTH_SHORT).show();
+
+        }
+        });
+        mMicrophoneButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mAudioManager.setMicrophoneMute(!mIsMicMuted);
+                mIsMicMuted = !mIsMicMuted;
+                String toastMessage;
+                if (mIsMicMuted){
+                    toastMessage = getString(R.string.mic_is_muted);
+                    mMicrophoneButton.setImageResource(R.drawable.microphone_selected);
+                }
+                else {
+                    toastMessage = getString(R.string.mic_is_unmuted);
+                    mMicrophoneButton.setImageResource(R.drawable.ic_mic_off);
+                }
+                Toast.makeText(CallScreenActivity.this, toastMessage, Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -195,6 +239,10 @@ public class CallScreenActivity extends BaseActivity implements SensorEventListe
         if (mProximity != null) {
             mPowerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
 
+            if (Build.VERSION.SDK_INT >=Build.VERSION_CODES.LOLLIPOP&&
+                    mPowerManager.isPowerSaveMode()){
+                Toast.makeText(this, "If you experience any problems in the call, turn off device power saving mode and try again", Toast.LENGTH_LONG).show();
+            }
             int field = 0x00000020;
             try {
                 // Yeah, this is hidden field.
@@ -379,7 +427,8 @@ public class CallScreenActivity extends BaseActivity implements SensorEventListe
     AudioManager.OnAudioFocusChangeListener mFocusChangeListener = new AudioManager.OnAudioFocusChangeListener() {
         @Override
         public void onAudioFocusChange(int focusChange) {
-            if (focusChange == AudioManager.AUDIOFOCUS_LOSS) {
+            if (focusChange == AudioManager.AUDIOFOCUS_LOSS
+                    ||focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT) {
                 setVolumeControlStream(AudioManager.USE_DEFAULT_STREAM_TYPE);
             }
         }
@@ -415,6 +464,8 @@ public class CallScreenActivity extends BaseActivity implements SensorEventListe
             Toast.makeText(CallScreenActivity.this, "Call Established", Toast.LENGTH_SHORT).show();
             mAudioManager.requestAudioFocus(mFocusChangeListener,
                     AudioManager.STREAM_VOICE_CALL, AudioManager.AUDIOFOCUS_GAIN_TRANSIENT);
+            mAudioManager.setMode(AudioManager.MODE_IN_CALL);
+            mAudioManager.setSpeakerphoneOn(false);
             mAudioPlayer.stopProgressTone();
             mCallState.setText(call.getState().toString());
         }

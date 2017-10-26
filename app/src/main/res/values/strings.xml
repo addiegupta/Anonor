@@ -65,5 +65,9 @@
     <string name="dismiss">Dismiss</string>
     <string name="no_response_message">Seems like no one is available right now</string>
     <string name="try_again">Try Again</string>
+    <string name="mic_is_muted">Microphone Muted</string>
+    <string name="mic_is_unmuted">Microphone Unmuted</string>
+    <string name="speakerphone_on">Speakerphone On</string>
+    <string name="speakerphone_off">Speakerphone Off</string>
 
 </resources>
