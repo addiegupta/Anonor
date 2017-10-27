@@ -1,5 +1,6 @@
 package com.example.android.talktime.ui;
 
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -475,6 +476,12 @@ public class CallScreenActivity extends BaseActivity implements SensorEventListe
             mAudioManager.setMicrophoneMute(mIsMicMuted);
             mAudioPlayer.stopProgressTone();
             mCallState.setText(call.getState().toString());
+
+            final NotificationManager notificationManager =
+                    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager.cancelAll();
+
+
         }
 
         @Override

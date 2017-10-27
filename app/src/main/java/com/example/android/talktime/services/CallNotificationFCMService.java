@@ -6,7 +6,6 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
-import android.os.Looper;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
@@ -23,12 +22,19 @@ public class CallNotificationFCMService extends FirebaseMessagingService {
     private static final String CALLERID_DATA_KEY = "callerId";
     private static final String NOTIF_TITLE_TEXT = "Someone is calling";
     private static final String NOTIF_BODY_TEXT = "Tap to pick up";
+    private static Handler mNotifCancelHandler;
 
 
     @Override
-    public void onMessageReceived(RemoteMessage remoteMessage) {
+    public void onCreate() {
+        super.onCreate();
+        if (mNotifCancelHandler == null) {
+            mNotifCancelHandler = new Handler();
+        }
+    }
 
-        Log.d(TAG, "From: " + remoteMessage.getFrom());
+    @Override
+    public void onMessageReceived(RemoteMessage remoteMessage) {
 
         // Check if message contains a data payload.
         if (remoteMessage.getData().size() > 0) {
@@ -55,7 +61,8 @@ public class CallNotificationFCMService extends FirebaseMessagingService {
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
         Intent intent = new Intent(CallNotificationFCMService.this, CallScreenActivity.class);
-        intent.putExtra(CALLERID_DATA_KEY,callerId);
+        intent.putExtra(CALLERID_DATA_KEY, callerId);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
         PendingIntent pending = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         notificationBuilder.setContentIntent(pending);
@@ -63,23 +70,25 @@ public class CallNotificationFCMService extends FirebaseMessagingService {
         // using the same tag and Id causes the new notification to replace an existing one
         String tag = String.valueOf(callerId);
         String idString = Long.toString(System.currentTimeMillis());
-        int id = Integer.valueOf(idString.substring(idString.length()-5));
+        int id = Integer.valueOf(idString.substring(idString.length() - 5));
         Timber.d("Notification id" + id);
 
-        mNotificationManager.notify(tag,id, notificationBuilder.build());
+        mNotificationManager.notify(tag, id, notificationBuilder.build());
 
-        removeNotification(tag,id);
+        removeNotificationAfter30s(tag, id);
     }
 
-    private void removeNotification(final String tag, final int id) {
-        Handler handler = new Handler(Looper.getMainLooper());
-        long delayInMilliseconds = 30000;
+    private void removeNotificationAfter30s(final String tag, final int id) {
+
         final NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        handler.postDelayed(new Runnable() {
+
+        mNotifCancelHandler.postDelayed(new Runnable() {
             public void run() {
-                notificationManager.cancel(tag,id);
+                Timber.d("Removing notification for " + tag + id);
+                notificationManager.cancel(tag, id);
             }
-        }, delayInMilliseconds);
+        },30000);
+
     }
 }
