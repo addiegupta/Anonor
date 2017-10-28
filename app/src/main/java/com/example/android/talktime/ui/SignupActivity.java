@@ -133,14 +133,13 @@ public class SignupActivity extends AppCompatActivity {
                         .addOnCompleteListener(SignupActivity.this, new OnCompleteListener<AuthResult>() {
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
-                                Toast.makeText(SignupActivity.this, "createUserWithEmail:onComplete:" + task.isSuccessful(), Toast.LENGTH_SHORT).show();
                                 mPBLoadingIndicator.setVisibility(View.GONE);
 
                                 // If sign in fails, display a message to the user. If sign in succeeds
                                 // the mAuth state listener will be notified and logic to handle the
                                 // signed in user can be handled in the listener.
                                 if (!task.isSuccessful()) {
-                                    Toast.makeText(SignupActivity.this, "Authentication failed." + task.getException(),
+                                    Toast.makeText(SignupActivity.this, "Authentication failed." + task.getException().getMessage(),
                                             Toast.LENGTH_SHORT).show();
                                 } else {
 

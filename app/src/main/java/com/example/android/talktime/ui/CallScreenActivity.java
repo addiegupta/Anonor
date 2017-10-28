@@ -480,8 +480,6 @@ public class CallScreenActivity extends BaseActivity implements SensorEventListe
             final NotificationManager notificationManager =
                     (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             notificationManager.cancelAll();
-
-
         }
 
         @Override

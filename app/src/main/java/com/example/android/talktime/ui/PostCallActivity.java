@@ -1,8 +1,12 @@
 package com.example.android.talktime.ui;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
@@ -12,6 +16,7 @@ import android.widget.Toast;
 
 import com.example.android.talktime.R;
 import com.example.android.talktime.model.Report;
+import com.example.android.talktime.receivers.NetworkChangeReceiver;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -26,6 +31,10 @@ public class PostCallActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private DatabaseReference mDBRef;
     private boolean mIsCaller;
+    private NetworkChangeReceiver networkChangeReceiver;
+    private BroadcastReceiver mDialogReceiver;
+    private AlertDialog mInternetDialog;
+
 
     private static final String IS_CALLER_KEY = "is_caller";
     private static final String SHARED_PREFS_KEY = "shared_prefs";
@@ -45,6 +54,15 @@ public class PostCallActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post_call);
         ButterKnife.bind(this);
+
+        IntentFilter filter = new IntentFilter();
+        filter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
+        filter.addAction("android.net.wifi.WIFI_STATE_CHANGED");
+        filter.addAction("ACTION_TRIGGER_RECEIVER");
+
+        networkChangeReceiver = new NetworkChangeReceiver();
+        registerReceiver(networkChangeReceiver, filter);
+
 
         initialiseDatabase();
 
@@ -74,6 +92,64 @@ public class PostCallActivity extends AppCompatActivity {
         startActivity(new Intent(PostCallActivity.this, MainActivity.class));
         finish();
     }
+    protected void onResume() {
+        super.onResume();
+        createDialogReceiver();
+
+    }
+
+
+
+    private void createDialogReceiver() {
+        IntentFilter filter = new IntentFilter();
+        filter.addAction("ACTION_NO_INTERNET");
+        filter.addAction("ACTION_INTERNET_AVAILABLE");
+
+        mDialogReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (intent.getAction().equals("ACTION_NO_INTERNET")) {
+
+                    /*if (mInternetDialog != null) {
+
+                        mInternetDialog.dismiss();
+                    }
+                    */
+                    if (mInternetDialog == null || !mInternetDialog.isShowing()) {
+
+                        AlertDialog.Builder builder = new AlertDialog.Builder(PostCallActivity.this);
+                        builder.setTitle("No Internet Access")
+                                .setMessage("The app cannot function without an internet connection")
+                                .setCancelable(false)
+                                .setPositiveButton("Retry", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        dialog.cancel();
+                                        Intent intent = new Intent("ACTION_TRIGGER_RECEIVER");
+                                        sendBroadcast(intent);
+                                    }
+                                })
+                                .setNegativeButton("Close App", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        dialog.cancel();
+                                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                        intent.putExtra("EXIT", true);
+                                        startActivity(intent);
+                                    }
+                                });
+                        mInternetDialog = builder.create();
+                        mInternetDialog.show();
+                    }
+                } else {
+                    if (mInternetDialog != null && mInternetDialog.isShowing() ) {
+                        mInternetDialog.dismiss();
+                        Toast.makeText(context, "Internet access restored", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+        };
+        registerReceiver(mDialogReceiver, filter);
+    }
 
     private void submitProblem() {
 
@@ -90,6 +166,19 @@ public class PostCallActivity extends AppCompatActivity {
         }
         Toast.makeText(this, "Problem Submitted", Toast.LENGTH_SHORT).show();
         dismissActivity();
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(mDialogReceiver);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(networkChangeReceiver);
 
     }
 }

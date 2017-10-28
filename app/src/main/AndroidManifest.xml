@@ -9,7 +9,7 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
-    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
     <!-- Required for installation on VoIP supported devices only -->
     <uses-feature
         android:name="android.hardware.sip.voip"
@@ -20,7 +20,6 @@
     <uses-feature
         android:name="android.hardware.microphone"
         android:required="true" />
-
 
     <application
         android:allowBackup="true"
@@ -93,6 +92,17 @@
             android:name=".ui.NoResponseActivity"
             android:launchMode="singleTask"
             android:screenOrientation="portrait" />
+        <!--
+        <receiver
+            android:name=".receivers.NetworkChangeReceiver"
+            android:label="NetworkChangeReceiver" >
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+                <action android:name="android.net.wifi.WIFI_STATE_CHANGED" />
+            </intent-filter>
+        </receiver>
+        -->
+
     </application>
 
 </manifest>

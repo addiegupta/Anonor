@@ -1,9 +1,11 @@
 package com.example.android.talktime.ui;
 
 import android.Manifest;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -20,6 +22,7 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.example.android.talktime.R;
+import com.example.android.talktime.receivers.NetworkChangeReceiver;
 import com.example.android.talktime.services.SinchService;
 import com.example.android.talktime.utils.CustomUtils;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -53,6 +56,9 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
     private boolean mIsCaller;
     private String mFirebaseIDToken;
     private String mOriginalCaller;
+    private NetworkChangeReceiver networkChangeReceiver;
+    private BroadcastReceiver mDialogReceiver;
+    private AlertDialog mInternetDialog;
 
     @Nullable
     @BindView(R.id.btn_send_push)
@@ -66,6 +72,13 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
             handlePermissions();
         }
 
+        IntentFilter filter = new IntentFilter();
+        filter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
+        filter.addAction("android.net.wifi.WIFI_STATE_CHANGED");
+        filter.addAction("ACTION_TRIGGER_RECEIVER");
+
+        networkChangeReceiver = new NetworkChangeReceiver();
+        registerReceiver(networkChangeReceiver, filter);
         SharedPreferences prefs = getSharedPreferences(SHARED_PREFS_KEY, Context.MODE_PRIVATE);
         mIsCaller = prefs.getBoolean(IS_CALLER_KEY, true);
 
@@ -103,6 +116,72 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
         }
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        createDialogReceiver();
+
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+
+        if (intent.getBooleanExtra("EXIT", false)) {
+            finish();
+        }
+    }
+
+    private void createDialogReceiver() {
+        IntentFilter filter = new IntentFilter();
+        filter.addAction("ACTION_NO_INTERNET");
+        filter.addAction("ACTION_INTERNET_AVAILABLE");
+
+        mDialogReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (intent.getAction().equals("ACTION_NO_INTERNET")) {
+
+                    /*if (mInternetDialog != null) {
+
+                        mInternetDialog.dismiss();
+                    }
+                    */
+                    if (mInternetDialog == null || !mInternetDialog.isShowing()) {
+
+                        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                        builder.setTitle("No Internet Access")
+                                .setMessage("The app cannot function without an internet connection")
+                                .setCancelable(false)
+                                .setPositiveButton("Retry", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        dialog.cancel();
+                                        Intent intent = new Intent("ACTION_TRIGGER_RECEIVER");
+                                        sendBroadcast(intent);
+                                    }
+                                })
+                                .setNegativeButton("Close App", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        dialog.cancel();
+                                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                        intent.putExtra("EXIT", true);
+                                        startActivity(intent);
+                                    }
+                                });
+                        mInternetDialog = builder.create();
+                        mInternetDialog.show();
+                    }
+                } else {
+                    if (mInternetDialog != null && mInternetDialog.isShowing() ) {
+                        mInternetDialog.dismiss();
+                        Toast.makeText(context, "Internet access restored", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+        };
+        registerReceiver(mDialogReceiver, filter);
+    }
 
     private void handlePermissions() {
 
@@ -135,10 +214,19 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
 
 
     @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(mDialogReceiver);
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         Timber.uprootAll();
+        unregisterReceiver(networkChangeReceiver);
+
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);

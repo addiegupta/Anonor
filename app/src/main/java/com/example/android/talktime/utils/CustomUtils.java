@@ -59,7 +59,7 @@ public final class CustomUtils {
         Timber.d(stringRequest.toString());
         Volley.newRequestQueue(context).add(stringRequest);
 
-        context.startActivity(new Intent(context, WaitingCallActivity.class).addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY));
+        context.startActivity(new Intent(context, WaitingCallActivity.class)/*.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY)*/);
     }
 
     /**

@@ -19,7 +19,7 @@ public class NoResponseHandler {
         return mNoResponseHandler;
     }
 
-    private static void initHandler(final Context context) {
+    public static void initHandler(final Context context) {
         mNoResponseHandler = new Handler(Looper.getMainLooper());
 
         mNoResponseHandler.postDelayed(new Runnable() {
