@@ -1,5 +1,6 @@
 package com.example.android.talktime.ui;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -17,6 +18,7 @@ import com.google.firebase.auth.FirebaseAuth;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class ResetPasswordActivity extends AppCompatActivity {
 
@@ -73,5 +75,10 @@ public class ResetPasswordActivity extends AppCompatActivity {
                         });
             }
         });
+    }
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+
     }
 }

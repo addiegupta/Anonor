@@ -20,6 +20,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import butterknife.BindView;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class WaitingCallActivity extends AppCompatActivity {
 
@@ -31,6 +32,7 @@ public class WaitingCallActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseDatabase mDatabase;
     private DatabaseReference mDBRef;
+    private BroadcastReceiver finishReceiver;
 
     @BindView(R.id.pb_calling_people)
     ProgressBar mPBCallingPeople;
@@ -51,12 +53,25 @@ public class WaitingCallActivity extends AppCompatActivity {
         networkChangeReceiver = new NetworkChangeReceiver();
         registerReceiver(networkChangeReceiver, filter);
 
+
+        finishReceiver = new BroadcastReceiver() {
+
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                String action = intent.getAction();
+                if (action.equals("finish_waitingcallactivity")) {
+                    finish();
+                }
+            }
+        };
+        registerReceiver(finishReceiver, new IntentFilter("finish_waitingcallactivity"));
+
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
                 finish();
             }
-        }, 35000);
+        }, 36000);
 
         NoResponseHandler.getHandler(this);
     }
@@ -92,6 +107,7 @@ public class WaitingCallActivity extends AppCompatActivity {
         registerReceiver(mDialogReceiver, filter);
     }
 
+
     @Override
     protected void onPause() {
         super.onPause();
@@ -103,8 +119,15 @@ public class WaitingCallActivity extends AppCompatActivity {
         super.onDestroy();
         unregisterReceiver(networkChangeReceiver);
         NoResponseHandler.stopHandler();
+        unregisterReceiver(finishReceiver);
 
     }
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+
+    }
+
 
     @Override
     public void onBackPressed() {

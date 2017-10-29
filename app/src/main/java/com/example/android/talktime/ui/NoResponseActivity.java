@@ -25,6 +25,7 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class NoResponseActivity extends AppCompatActivity {
 
@@ -83,7 +84,11 @@ public class NoResponseActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
 
+    }
     private void createDialogReceiver() {
         IntentFilter filter = new IntentFilter();
         filter.addAction("ACTION_NO_INTERNET");

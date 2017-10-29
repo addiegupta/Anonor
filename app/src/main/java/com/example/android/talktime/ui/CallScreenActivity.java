@@ -46,6 +46,7 @@ import java.util.TimerTask;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import timber.log.Timber;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class CallScreenActivity extends BaseActivity implements SensorEventListener {
 
@@ -139,17 +140,16 @@ public class CallScreenActivity extends BaseActivity implements SensorEventListe
                 mAudioManager.setSpeakerphoneOn(!mIsSpeakerPhone);
                 mIsSpeakerPhone = !mIsSpeakerPhone;
                 String toastMessage;
-                if (mIsSpeakerPhone){
+                if (mIsSpeakerPhone) {
                     toastMessage = getString(R.string.speakerphone_on);
                     mSpeakerPhoneButton.setImageResource(R.drawable.speakerphone_selected);
-                }
-                else {
+                } else {
                     toastMessage = getString(R.string.speakerphone_off);
                     mSpeakerPhoneButton.setImageResource(R.drawable.ic_speakerphone);
                 }
                 Toast.makeText(CallScreenActivity.this, toastMessage, Toast.LENGTH_SHORT).show();
 
-        }
+            }
         });
         mMicrophoneButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -157,11 +157,10 @@ public class CallScreenActivity extends BaseActivity implements SensorEventListe
                 mAudioManager.setMicrophoneMute(!mIsMicMuted);
                 mIsMicMuted = !mIsMicMuted;
                 String toastMessage;
-                if (mIsMicMuted){
+                if (mIsMicMuted) {
                     toastMessage = getString(R.string.mic_is_muted);
                     mMicrophoneButton.setImageResource(R.drawable.microphone_selected);
-                }
-                else {
+                } else {
                     toastMessage = getString(R.string.mic_is_unmuted);
                     mMicrophoneButton.setImageResource(R.drawable.ic_mic_off);
                 }
@@ -203,6 +202,8 @@ public class CallScreenActivity extends BaseActivity implements SensorEventListe
 
             //Stop handler from creating NoResponseActivity
             NoResponseHandler.stopHandler();
+            Intent intent = new Intent("finish_waitingcallactivity");
+            sendBroadcast(intent);
 
             mCallId = getIntent().getStringExtra(SinchService.CALL_ID);
             Timber.d(mCallId);
@@ -244,8 +245,8 @@ public class CallScreenActivity extends BaseActivity implements SensorEventListe
         if (mProximity != null) {
             mPowerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
 
-            if (Build.VERSION.SDK_INT >=Build.VERSION_CODES.LOLLIPOP&&
-                    mPowerManager.isPowerSaveMode()){
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP &&
+                    mPowerManager.isPowerSaveMode()) {
                 Toast.makeText(this, "If you experience any problems in the call, turn off device power saving mode and try again", Toast.LENGTH_LONG).show();
             }
             int field = 0x00000020;
@@ -347,18 +348,34 @@ public class CallScreenActivity extends BaseActivity implements SensorEventListe
     }
 
     @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+
+    }
+
+    @Override
     public void onPause() {
         super.onPause();
 
-        //TODO Change to keeping wakelock even when activity is paused (maybe)
-        if (mProximity != null) {
-            mSensorManager.unregisterListener(this);
-        }
 
         if (mDurationTask != null) {
             mDurationTask.cancel();
             mTimer.cancel();
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        //TODO Change to keeping wakelock even when activity is paused (maybe)
+        if (mProximity != null) {
+            if (mWakeLock.isHeld()){
+
+            mWakeLock.release();
+            }
+        }
+        mSensorManager.unregisterListener(this);
+
     }
 
     @Override
@@ -394,6 +411,10 @@ public class CallScreenActivity extends BaseActivity implements SensorEventListe
             postCallIntent.putExtra(CALLERID_DATA_KEY, mOriginalReceiver);
         } else {
             postCallIntent.putExtra(CALLERID_DATA_KEY, mOriginalCaller);
+        }
+
+        if (mProximity != null) {
+            mSensorManager.unregisterListener(this);
         }
         startActivity(postCallIntent);
         finish();
@@ -433,7 +454,7 @@ public class CallScreenActivity extends BaseActivity implements SensorEventListe
         @Override
         public void onAudioFocusChange(int focusChange) {
             if (focusChange == AudioManager.AUDIOFOCUS_LOSS
-                    ||focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT) {
+                    || focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT) {
                 setVolumeControlStream(AudioManager.USE_DEFAULT_STREAM_TYPE);
             }
         }

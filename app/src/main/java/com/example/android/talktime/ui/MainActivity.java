@@ -18,7 +18,7 @@ import android.support.v7.app.AlertDialog;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.android.talktime.R;
@@ -39,6 +39,7 @@ import java.io.IOException;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import timber.log.Timber;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class MainActivity extends BaseActivity implements SinchService.StartFailedListener {
 
@@ -61,8 +62,8 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
     private AlertDialog mInternetDialog;
 
     @Nullable
-    @BindView(R.id.btn_send_push)
-    Button mSendPushButton;
+    @BindView(R.id.iv_talk_button)
+    ImageView mTalkButtonImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,7 +95,7 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
         if (mIsCaller) {
             setContentView(R.layout.activity_main_caller);
             ButterKnife.bind(this);
-            mSendPushButton.setOnClickListener(new View.OnClickListener() {
+            mTalkButtonImage.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     sendCallRequest();
@@ -325,6 +326,11 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
 
     }
 
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+
+    }
 
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {

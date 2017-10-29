@@ -20,13 +20,15 @@
 
             <TextView
                 android:id="@+id/tv_post_call_disconnected_message"
+                fontPath="fonts/nexa_bold.ttf"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="32dp"
                 android:text="@string/call_disconnected"
                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Widget.ActionBar.Title"
-                android:textSize="22sp" />
+                android:textSize="24sp"
+                tools:ignore="MissingPrefix" />
 
             <Button
                 android:id="@+id/btn_dismiss"
@@ -34,10 +36,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="8dp"
                 android:layout_marginTop="16dp"
                 android:text="@string/dismiss"
                 android:textColor="@color/colorAccent"
-                android:textSize="20sp" />
+                android:textSize="22sp" />
 
         </LinearLayout>
     </android.support.v7.widget.CardView>
@@ -56,13 +59,15 @@
 
             <TextView
                 android:id="@+id/tv_post_call_report_message_1"
+                fontPath="fonts/nexa_bold.ttf"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="16dp"
                 android:text="@string/post_call_report_message_pt1"
                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Widget.ActionBar.Title"
-                android:textSize="18sp" />
+                android:textSize="20sp"
+                tools:ignore="MissingPrefix" />
 
             <TextView
                 android:id="@+id/tv_post_call_report_message_2"
@@ -71,7 +76,7 @@
                 android:layout_gravity="center_horizontal"
                 android:text="@string/post_call_report_message_pt2"
                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Widget.ActionBar.Title"
-                android:textSize="16sp" />
+                android:textSize="18sp" />
 
 
             <EditText
@@ -84,7 +89,7 @@
                 android:layout_marginTop="16dp"
                 android:hint="@string/describe_your_problem"
                 android:inputType="textCapSentences|textMultiLine"
-                android:textSize="14sp" />
+                android:textSize="16sp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -97,7 +102,9 @@
                 <TextView
                     android:id="@+id/tv_report_user_message"
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:textSize="16sp"
                     android:layout_weight="4"
                     android:text="@string/problem_involving_caller" />
 
@@ -105,6 +112,7 @@
                     android:id="@+id/checkbox_report_user"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
                     android:layout_weight="1" />
 
             </LinearLayout>
@@ -114,6 +122,7 @@
                 style="@style/Base.Widget.AppCompat.Button.Borderless"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textSize="18sp"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginBottom="16dp"
                 android:layout_marginTop="16dp"

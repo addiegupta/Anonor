@@ -64,7 +64,7 @@ public class CallNotificationFCMService extends FirebaseMessagingService {
         intent.putExtra(CALLERID_DATA_KEY, callerId);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
-        PendingIntent pending = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pending = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
         notificationBuilder.setContentIntent(pending);
 
         // using the same tag and Id causes the new notification to replace an existing one
