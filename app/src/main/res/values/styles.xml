@@ -14,4 +14,20 @@
     <style name="AppTheme.Widget.TextView" parent="android:Widget.Holo.TextView">
         <item name="fontPath">fonts/nexa_light.ttf</item>
     </style>
+
+
+  <!--  <style name="ActionBar.Solid.TalkTime.NoTitle" parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
+        <item name="displayOptions">useLogo|showHome</item>
+        <item name="logo">@drawable/damn</item>
+    </style>
+
+    <style name="AppTheme.TalkTimeLogo" parent="@style/AppTheme">
+        <item name="actionBarStyle">@style/ActionBar.Solid.TalkTime.NoTitle</item>
+    </style>-->
+
+    <style name="AppTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
 </resources>

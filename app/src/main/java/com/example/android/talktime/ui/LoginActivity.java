@@ -3,9 +3,11 @@ package com.example.android.talktime.ui;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.View;
@@ -46,6 +48,9 @@ public class LoginActivity extends AppCompatActivity {
     Button mButtonLogin;
     @BindView(R.id.btn_reset_password)
     Button mResetPassButton;
+    @BindView(R.id.til_login_password)
+    TextInputLayout mPasswordTIL;
+
 
     private FirebaseAuth auth;
 
@@ -60,10 +65,8 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
         //Get Firebase auth instance
         auth = FirebaseAuth.getInstance();
-
 
         mUserDatabase = FirebaseDatabase.getInstance();
         mDBRef = mUserDatabase.getReference();
@@ -72,6 +75,7 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
 
+        mPasswordTIL.setTypeface(Typeface.createFromAsset(getAssets(),"fonts/nexa_light.ttf"));
         // Read from the database
         mDBRef.addValueEventListener(new ValueEventListener() {
 

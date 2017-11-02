@@ -50,6 +50,7 @@ public class PostCallActivity extends AppCompatActivity {
     @BindView(R.id.checkbox_report_user)
     CheckBox mReportUserCheckbox;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -123,7 +124,7 @@ public class PostCallActivity extends AppCompatActivity {
                     if (mInternetDialog == null || !mInternetDialog.isShowing()) {
 
                         AlertDialog.Builder builder = new AlertDialog.Builder(PostCallActivity.this);
-                        builder.setTitle("No Internet Access")
+                        builder.setTitle(R.string.no_internet)
                                 .setMessage("The app cannot function without an internet connection")
                                 .setCancelable(false)
                                 .setPositiveButton("Retry", new DialogInterface.OnClickListener() {

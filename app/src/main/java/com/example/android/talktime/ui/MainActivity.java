@@ -15,8 +15,8 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -65,6 +65,13 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
     @BindView(R.id.iv_talk_button)
     ImageView mTalkButtonImage;
 
+    @Nullable
+    @BindView(R.id.iv_talk_message)
+    ImageView mTalkMessage;
+
+    @BindView(R.id.toolbar)
+    Toolbar mToolbar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -95,6 +102,16 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
         if (mIsCaller) {
             setContentView(R.layout.activity_main_caller);
             ButterKnife.bind(this);
+
+            mToolbar.setTitle("");
+            setSupportActionBar(mToolbar);
+
+            mTalkMessage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    sendCallRequest();
+                }
+            });
             mTalkButtonImage.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -105,6 +122,8 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
         } else {
             setContentView(R.layout.activity_main_receiver);
             ButterKnife.bind(this);
+            mToolbar.setTitle("");
+            setSupportActionBar(mToolbar);
 
             if (getIntent().hasExtra(CALLERID_DATA_KEY)) {
                 mOriginalCaller = getIntent().getStringExtra(CALLERID_DATA_KEY);
@@ -151,7 +170,7 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
                     if (mInternetDialog == null || !mInternetDialog.isShowing()) {
 
                         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                        builder.setTitle("No Internet Access")
+                        builder.setTitle(R.string.no_internet)
                                 .setMessage("The app cannot function without an internet connection")
                                 .setCancelable(false)
                                 .setPositiveButton("Retry", new DialogInterface.OnClickListener() {
@@ -174,7 +193,7 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
                         mInternetDialog.show();
                     }
                 } else {
-                    if (mInternetDialog != null && mInternetDialog.isShowing() ) {
+                    if (mInternetDialog != null && mInternetDialog.isShowing()) {
                         mInternetDialog.dismiss();
                         Toast.makeText(context, "Internet access restored", Toast.LENGTH_SHORT).show();
                     }
@@ -231,25 +250,19 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-
-        int menuId = item.getItemId();
-
-        switch (menuId) {
-            case R.id.menu_main_action_sign_out:
+        menu.findItem(R.id.menu_main_action_sign_out).getActionView().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
                 showSignOutAlertDialog();
-                break;
-        }
-        return super.onOptionsItemSelected(item);
+            }
+        });
+        return super.onCreateOptionsMenu(menu);
     }
 
     private void showSignOutAlertDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(R.string.sign_out_confirmation);
+
+        builder.setTitle(R.string.log_out_confirmation);
         builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -305,7 +318,7 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
 
     @Override
     public void onStartFailed(SinchError error) {
-        Toast.makeText(this, error.toString(), Toast.LENGTH_LONG).show();
+        Toast.makeText(this,"An error has occured.Please restart the app", Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -321,7 +334,6 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
         //Register user
         if (getSinchServiceInterface() != null && !getSinchServiceInterface().isStarted()) {
             getSinchServiceInterface().startClient(mAuth.getCurrentUser().getUid());
-            Toast.makeText(MainActivity.this, "Registered as " + mAuth.getCurrentUser().getUid(), Toast.LENGTH_SHORT).show();
         }
 
     }

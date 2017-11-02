@@ -42,9 +42,9 @@ public class NoResponseActivity extends AppCompatActivity {
     private AlertDialog mInternetDialog;
 
 
-
     @BindView(R.id.btn_try_again_call)
     Button mTryAgainButton;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,6 +89,7 @@ public class NoResponseActivity extends AppCompatActivity {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
 
     }
+
     private void createDialogReceiver() {
         IntentFilter filter = new IntentFilter();
         filter.addAction("ACTION_NO_INTERNET");
@@ -107,7 +108,7 @@ public class NoResponseActivity extends AppCompatActivity {
                     if (mInternetDialog == null || !mInternetDialog.isShowing()) {
 
                         AlertDialog.Builder builder = new AlertDialog.Builder(NoResponseActivity.this);
-                        builder.setTitle("No Internet Access")
+                        builder.setTitle(R.string.no_internet)
                                 .setMessage("The app cannot function without an internet connection")
                                 .setCancelable(false)
                                 .setPositiveButton("Retry", new DialogInterface.OnClickListener() {
@@ -130,7 +131,7 @@ public class NoResponseActivity extends AppCompatActivity {
                         mInternetDialog.show();
                     }
                 } else {
-                    if (mInternetDialog != null && mInternetDialog.isShowing() ) {
+                    if (mInternetDialog != null && mInternetDialog.isShowing()) {
                         mInternetDialog.dismiss();
                         Toast.makeText(context, "Internet access restored", Toast.LENGTH_SHORT).show();
                     }
@@ -145,6 +146,7 @@ public class NoResponseActivity extends AppCompatActivity {
         String callerId = mAuth.getCurrentUser().getUid();
         CustomUtils.sendCallRequest(this, callerId, mDBRef, mFirebaseIDToken);
     }
+
     /**
      * Needed for authentication of user while using cloud functions
      */

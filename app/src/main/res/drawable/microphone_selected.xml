@@ -7,6 +7,6 @@
         </shape>
     </item>
 
-    <item android:drawable="@drawable/ic_mic_off" android:gravity="center">
+    <item android:drawable="@drawable/ic_mic_off_white" android:gravity="center">
     </item>
 </layer-list>

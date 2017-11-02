@@ -14,13 +14,13 @@ public class NoResponseHandler {
 
     public static Handler getHandler(Context context) {
         if (mNoResponseHandler == null) {
-            initHandler(context);
+            mNoResponseHandler = new Handler(Looper.getMainLooper());
         }
+        initHandler(context);
         return mNoResponseHandler;
     }
 
     public static void initHandler(final Context context) {
-        mNoResponseHandler = new Handler(Looper.getMainLooper());
 
         mNoResponseHandler.postDelayed(new Runnable() {
             @Override

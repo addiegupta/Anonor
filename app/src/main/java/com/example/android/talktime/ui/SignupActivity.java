@@ -3,15 +3,17 @@ package com.example.android.talktime.ui;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
-import android.widget.Spinner;
+import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import com.example.android.talktime.R;
@@ -48,8 +50,10 @@ public class SignupActivity extends AppCompatActivity {
     ProgressBar mPBLoadingIndicator;
     @BindView(R.id.btn_reset_password)
     Button mButtonResetPass;
-    @BindView(R.id.spinner_type_of_caller_signup)
-    Spinner mSpinnerTypeOfCaller;
+    @BindView(R.id.til_signup_password)
+    TextInputLayout mPasswordTIL;
+    @BindView(R.id.radio_group_type_of_user)
+    RadioGroup mTypeOfUserRadioGroup;
 
     private FirebaseAuth mAuth;
     private FirebaseDatabase mUserDatabase;
@@ -64,6 +68,8 @@ public class SignupActivity extends AppCompatActivity {
         setContentView(R.layout.activity_sign_up);
 
         ButterKnife.bind(this);
+
+        mPasswordTIL.setTypeface(Typeface.createFromAsset(getAssets(),"fonts/nexa_light.ttf"));
         //Get Firebase mAuth instance
         mAuth = FirebaseAuth.getInstance();
 
@@ -145,13 +151,19 @@ public class SignupActivity extends AppCompatActivity {
                                 } else {
 
                                     SharedPreferences prefs = getSharedPreferences(SHARED_PREFS_KEY, Context.MODE_PRIVATE);
-                                    //TODO Havent handled token insertion in DB onTokenRefresh
-                                    //FIXME No insertion in DB on signup
                                     String fcmToken = prefs.getString(FCM_TOKEN,null);
                                     User user = new User(email, 0,fcmToken);
 
                                     String uniqueUserId = mAuth.getCurrentUser().getUid();
-                                    String typeOfUser = mSpinnerTypeOfCaller.getSelectedItem().toString();
+                                    String typeOfUser;
+                                    int id = mTypeOfUserRadioGroup.getCheckedRadioButtonId();
+                                    if (id == R.id.rb_caller){
+                                        typeOfUser = getString(R.string.caller);
+                                    }
+                                    else {
+                                        typeOfUser = getString(R.string.receiver);
+                                    }
+
 
                                     if (typeOfUser.equals(getString(R.string.caller))) {
 

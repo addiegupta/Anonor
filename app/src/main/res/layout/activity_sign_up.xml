@@ -1,16 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true">
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme">
+
+        <include layout="@layout/toolbar_layout" />
+    </android.support.design.widget.AppBarLayout>
+
 
     <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:background="@color/colorPrimaryDark"
         android:gravity="center"
+        android:layout_marginTop="16dp"
         android:orientation="vertical"
         android:padding="@dimen/activity_horizontal_margin">
 
@@ -25,7 +32,8 @@
 
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:textColorHint="@android:color/white">
 
             <EditText
                 android:id="@+id/et_email"
@@ -39,8 +47,10 @@
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
+            android:id="@+id/til_signup_password"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:textColorHint="@android:color/white">
 
             <EditText
                 android:id="@+id/et_password"
@@ -56,29 +66,43 @@
 
         </android.support.design.widget.TextInputLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:padding="8dp"
+            android:text="@string/type_of_caller"
+            android:textColor="@android:color/white"
+            android:textSize="18sp" />
+
+        <RadioGroup
+            android:id="@+id/radio_group_type_of_user"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:checkedButton="@+id/rb_caller"
             android:orientation="horizontal">
 
-            <TextView
+            <RadioButton
+                android:id="@+id/rb_caller"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:padding="8dp"
-                android:text="@string/type_of_caller"
-                android:textSize="18sp" />
+                android:layout_marginEnd="32dp"
+                android:layout_marginRight="32dp"
+                android:text="@string/caller"
+                android:textColor="@android:color/white" />
 
-            <Spinner
-                android:id="@+id/spinner_type_of_caller_signup"
+            <RadioButton
+                android:id="@+id/rb_receiver"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="3"
-                android:drawSelectorOnTop="true"
-                android:entries="@array/signup_caller_spinner_array"
-                android:padding="8dp"
-                android:spinnerMode="dropdown" />
-        </LinearLayout>
+                android:layout_marginLeft="32dp"
+                android:layout_marginStart="32dp"
+                android:layout_weight="1"
+                android:text="@string/receiver"
+                android:textColor="@android:color/white" />
+        </RadioGroup>
+
 
         <Button
             android:id="@+id/sign_up_button"
@@ -86,9 +110,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:background="@color/colorAccent"
+            android:background="@drawable/button_shape_red"
             android:text="@string/action_sign_up"
-            android:textColor="@android:color/black"
+            android:textAllCaps="false"
+            android:textColor="@android:color/white"
+            android:textSize="28sp"
             android:textStyle="bold" />
 
         <Button

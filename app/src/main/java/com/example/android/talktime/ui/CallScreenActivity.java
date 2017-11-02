@@ -13,9 +13,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
 import android.os.PowerManager;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -72,7 +72,7 @@ public class CallScreenActivity extends BaseActivity implements SensorEventListe
     @BindView(R.id.callState)
     TextView mCallState;
     @BindView(R.id.hangupButton)
-    FloatingActionButton mEndCallButton;
+    Button mEndCallButton;
     @BindView(R.id.btn_speakerphone)
     ImageButton mSpeakerPhoneButton;
     @BindView(R.id.btn_microphone)
@@ -272,7 +272,7 @@ public class CallScreenActivity extends BaseActivity implements SensorEventListe
                         createCall();
                     }
                 } else {
-                    Toast.makeText(CallScreenActivity.this, "Too late", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(CallScreenActivity.this, "Too late.Someone else has picked the call", Toast.LENGTH_LONG).show();
                     startActivity(new Intent(CallScreenActivity.this, MainActivity.class));
                     finish();
                 }
@@ -305,7 +305,6 @@ public class CallScreenActivity extends BaseActivity implements SensorEventListe
         mServiceConnected = true;
         if (getSinchServiceInterface() != null && !getSinchServiceInterface().isStarted()) {
             getSinchServiceInterface().startClient(mAuth.getCurrentUser().getUid());
-            Toast.makeText(CallScreenActivity.this, "Registered as " + mAuth.getCurrentUser().getUid(), Toast.LENGTH_SHORT).show();
         }
         if (mIsCaller) {
             Call call = getSinchServiceInterface().getCall(mCallId);
@@ -313,6 +312,9 @@ public class CallScreenActivity extends BaseActivity implements SensorEventListe
                 call.answer();
                 call.addCallListener(new SinchCallListener());
                 mCallState.setText(call.getState().toString());
+                if (call.getState().toString().equals("INITIATING")) {
+                    mCallState.setText(R.string.connecting);
+                }
                 mOriginalReceiver = call.getRemoteUserId();
             } else {
                 Toast.makeText(this, "An error occured", Toast.LENGTH_SHORT).show();
@@ -326,11 +328,9 @@ public class CallScreenActivity extends BaseActivity implements SensorEventListe
         try {
             Call call = getSinchServiceInterface().callUser(mOriginalCaller);
 
-            Toast.makeText(this, "Calling " + mOriginalCaller, Toast.LENGTH_SHORT).show();
             if (call == null) {
                 // Service failed for some reason, show a Toast and abort
-                Toast.makeText(this, "Service is not started. Try stopping the service and starting it again before "
-                        + "placing a call.", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "An error has occurred", Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -340,7 +340,12 @@ public class CallScreenActivity extends BaseActivity implements SensorEventListe
 
             mCallId = call.getCallId();
             call.addCallListener(new SinchCallListener());
-            mCallState.setText(call.getState().toString());
+            if (call.getState().toString().equals("INITIATING")) {
+
+                mCallState.setText(R.string.connecting);
+            } else {
+                mCallState.setText(call.getState().toString());
+            }
 
         } catch (MissingPermissionException e) {
             ActivityCompat.requestPermissions(this, new String[]{e.getRequiredPermission()}, 0);
@@ -369,9 +374,9 @@ public class CallScreenActivity extends BaseActivity implements SensorEventListe
         super.onDestroy();
         //TODO Change to keeping wakelock even when activity is paused (maybe)
         if (mProximity != null) {
-            if (mWakeLock.isHeld()){
+            if (mWakeLock.isHeld()) {
 
-            mWakeLock.release();
+                mWakeLock.release();
             }
         }
         mSensorManager.unregisterListener(this);
@@ -471,7 +476,7 @@ public class CallScreenActivity extends BaseActivity implements SensorEventListe
             // Abandons audio focus so that any interrupted app can gain audio focus
             mAudioManager.abandonAudioFocus(mFocusChangeListener);
 
-            String endMsg = "Call ended: " + call.getDetails().toString();
+            String endMsg = "Call ended";
             Toast.makeText(CallScreenActivity.this, endMsg, Toast.LENGTH_LONG).show();
             long duration = call.getDetails().getDuration();
 
@@ -487,7 +492,7 @@ public class CallScreenActivity extends BaseActivity implements SensorEventListe
         @Override
         public void onCallEstablished(Call call) {
             Timber.d("Call established");
-            Toast.makeText(CallScreenActivity.this, "Call Established", Toast.LENGTH_SHORT).show();
+            Toast.makeText(CallScreenActivity.this, "Call Connected", Toast.LENGTH_SHORT).show();
             mAudioManager.requestAudioFocus(mFocusChangeListener,
                     AudioManager.STREAM_VOICE_CALL, AudioManager.AUDIOFOCUS_GAIN_TRANSIENT);
             mAudioManager.setMode(AudioManager.MODE_IN_CALL);
@@ -496,7 +501,14 @@ public class CallScreenActivity extends BaseActivity implements SensorEventListe
             mAudioManager.setSpeakerphoneOn(mIsSpeakerPhone);
             mAudioManager.setMicrophoneMute(mIsMicMuted);
             mAudioPlayer.stopProgressTone();
-            mCallState.setText(call.getState().toString());
+            String callState = call.getState().toString();
+            if (callState.equals("INITIATING")) {
+                mCallState.setText(R.string.connecting);
+            } else if (callState.equals("ESTABLISHED")) {
+                mCallState.setText(R.string.connected);
+            } else {
+                mCallState.setText(callState);
+            }
 
             final NotificationManager notificationManager =
                     (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);

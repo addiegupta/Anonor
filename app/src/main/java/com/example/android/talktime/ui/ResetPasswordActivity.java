@@ -31,6 +31,7 @@ public class ResetPasswordActivity extends AppCompatActivity {
     @BindView(R.id.pb_loading_indicator)
     ProgressBar mPBLoadingIndicator;
 
+
     private FirebaseAuth auth;
 
     @Override

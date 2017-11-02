@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.example.android.talktime.R;
@@ -19,7 +18,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import butterknife.BindView;
+import butterknife.ButterKnife;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class WaitingCallActivity extends AppCompatActivity {
@@ -34,13 +33,12 @@ public class WaitingCallActivity extends AppCompatActivity {
     private DatabaseReference mDBRef;
     private BroadcastReceiver finishReceiver;
 
-    @BindView(R.id.pb_calling_people)
-    ProgressBar mPBCallingPeople;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_waiting_call);
+
+        ButterKnife.bind(this);
 
         initialiseAuthAndDatabaseReference();
 
@@ -131,8 +129,9 @@ public class WaitingCallActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+
         AlertDialog.Builder builder = new AlertDialog.Builder(WaitingCallActivity.this);
-        builder.setTitle("Cancel calling?")
+        builder.setTitle(R.string.no_internet)
                 .setMessage("The call process will be terminated")
                 .setCancelable(true)
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
