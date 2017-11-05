@@ -41,7 +41,8 @@ admin.auth().verifyIdToken(request.headers.authorization).then(decodedIdToken =>
         				data: {
         						callerId: userCallerId
             				}
-        			};
+            		}
+            		
         console.log("userCallerId",userCallerId);
 
         if (tokens.length!=0) {
@@ -63,7 +64,6 @@ function loadUsers() {
     let defer = new Promise((resolve, reject) => {
         dbRef.once('value', (snap) => {
             let data = snap.val();
-            //Check for errors
             let dbSize = snap.numChildren();
 
             let users = [];
@@ -80,7 +80,6 @@ function loadUsers() {
     				console.log("random",randomnumber);
     				if(users.indexOf( randomnumber) > -1) continue;
 
-    				//Change to insert fcm token only
 
     				users[users.length] = data[randomnumber];
     				console.log("more than 10,pushing",data[randomnumber]);

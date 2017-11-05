@@ -100,11 +100,6 @@ public class NoResponseActivity extends AppCompatActivity {
             public void onReceive(Context context, Intent intent) {
                 if (intent.getAction().equals("ACTION_NO_INTERNET")) {
 
-                    /*if (mInternetDialog != null) {
-
-                        mInternetDialog.dismiss();
-                    }
-                    */
                     if (mInternetDialog == null || !mInternetDialog.isShowing()) {
 
                         AlertDialog.Builder builder = new AlertDialog.Builder(NoResponseActivity.this);
@@ -145,6 +140,7 @@ public class NoResponseActivity extends AppCompatActivity {
 
         String callerId = mAuth.getCurrentUser().getUid();
         CustomUtils.sendCallRequest(this, callerId, mDBRef, mFirebaseIDToken);
+        finish();
     }
 
     /**

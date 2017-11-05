@@ -179,7 +179,6 @@ public class SinchService extends Service {
         public void onIncomingCall(CallClient callClient, Call call) {
             Log.d(TAG, "Incoming call");
             Intent intent = new Intent (SinchService.this, CallScreenActivity.class);
-//            Intent intent = new Intent(SinchService.this, IncomingCallScreenActivity.class);
             intent.putExtra(CALL_ID, call.getCallId());
             intent.putExtra(CALLER_SCREEN_BOOL_KEY,true);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

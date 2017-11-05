@@ -113,7 +113,6 @@ public class CallScreenActivity extends BaseActivity implements SensorEventListe
 
         Timber.d("CallScreenActivity launched");
 
-        //TODO Check requirement
         mAudioPlayer = new AudioPlayer(this);
 
         mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
@@ -372,7 +371,6 @@ public class CallScreenActivity extends BaseActivity implements SensorEventListe
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        //TODO Change to keeping wakelock even when activity is paused (maybe)
         if (mProximity != null) {
             if (mWakeLock.isHeld()) {
 

@@ -162,11 +162,6 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
             public void onReceive(Context context, Intent intent) {
                 if (intent.getAction().equals("ACTION_NO_INTERNET")) {
 
-                    /*if (mInternetDialog != null) {
-
-                        mInternetDialog.dismiss();
-                    }
-                    */
                     if (mInternetDialog == null || !mInternetDialog.isShowing()) {
 
                         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
