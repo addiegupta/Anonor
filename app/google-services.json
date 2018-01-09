@@ -10,7 +10,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:665271254197:android:9b6d1e240ac54251",
         "android_client_info": {
-          "package_name": "com.example.android.talktime"
+          "package_name": "com.talktime.android"
         }
       },
       "oauth_client": [
@@ -18,7 +18,7 @@
           "client_id": "665271254197-3qt3lcn0dau84bph3m5c4t3k1ce8q3ae.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.example.android.talktime",
+            "package_name": "com.talktime.android",
             "certificate_hash": "da6ab1685c1eac8182e2d546afea4a8369a0f636"
           }
         },

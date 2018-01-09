@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    package="com.example.android.talktime">
+    package="com.talktime">
 
     <!-- Permissions for calling -->
     <uses-permission android:name="android.permission.INTERNET" />
@@ -14,34 +14,33 @@
     <!-- Required for installation on VoIP supported devices only -->
     <uses-feature
         android:name="android.hardware.sip.voip"
-        android:required="true" />
+        android:required="false" />
     <uses-feature
         android:name="android.hardware.wifi"
-        android:required="true" />
+        android:required="false" />
     <uses-feature
         android:name="android.hardware.microphone"
         android:required="true" />
 
     <application
-        android:name=".ui.TalkApplication"
+        android:name=".android.ui.TalkApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <service android:name=".services.SinchService" />
+        <service android:name=".android.services.SinchService" />
 
         <activity
-            android:name=".ui.CallScreenActivity"
+            android:name=".android.ui.CallScreenActivity"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".ui.BaseActivity"
+            android:name=".android.ui.BaseActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ui.SignupActivity"
+            android:name=".android.ui.SignupActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -51,25 +50,25 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.MainActivity"
+            android:name=".android.ui.MainActivity"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".ui.ResetPasswordActivity"
+            android:name=".android.ui.ResetPasswordActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".ui.LoginActivity"
+            android:name=".android.ui.LoginActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <!-- FCM services -->
-        <service android:name=".services.CallNotificationFCMService">
+        <service android:name=".android.services.CallNotificationFCMService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
-        <service android:name=".services.CustomFirebaseInstanceIDService">
+        <service android:name=".android.services.CustomFirebaseInstanceIDService">
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
@@ -87,29 +86,20 @@
             android:resource="@color/colorAccent" />
 
         <activity
-            android:name=".ui.WaitingCallActivity"
+            android:name=".android.ui.WaitingCallActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".ui.PostCallActivity"
+            android:name=".android.ui.PostCallActivity"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".ui.NoResponseActivity"
+            android:name=".android.ui.NoResponseActivity"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
-        <!--
-        <receiver
-            android:name=".receivers.NetworkChangeReceiver"
-            android:label="NetworkChangeReceiver" >
-            <intent-filter>
-                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
-                <action android:name="android.net.wifi.WIFI_STATE_CHANGED" />
-            </intent-filter>
-        </receiver>
-        -->
+
 
     </application>
 

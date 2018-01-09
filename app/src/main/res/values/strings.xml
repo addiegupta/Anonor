@@ -74,5 +74,7 @@
     <string name="end_call">end call</string>
     <string name="log_out">Logout</string>
     <string name="no_internet">No Internet Access</string>
+    <string name="caller_lowercase">caller</string>
+    <string name="receiver_lowercase">receiver</string>
 
 </resources>

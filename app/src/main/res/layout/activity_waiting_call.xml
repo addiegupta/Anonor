@@ -51,7 +51,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/colorPrimaryDark"
-        tools:context="com.example.android.talktime.ui.WaitingCallActivity">
+        tools:contecom.talktimetime.ui.WaitingCallActivity">
 
         <ProgressBar
             android:id="@+id/pb_calling_people"
