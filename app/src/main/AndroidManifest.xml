@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    package="com.talktime">
+    package="com.addie">
 
     <!-- Permissions for calling -->
     <uses-permission android:name="android.permission.INTERNET" />
@@ -23,24 +23,24 @@
         android:required="true" />
 
     <application
-        android:name=".android.ui.TalkApplication"
+        android:name="com.addie.xcall.ui.TalkApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <service android:name=".android.services.SinchService" />
+        <service android:name="com.addie.xcall.services.SinchService" />
 
         <activity
-            android:name=".android.ui.CallScreenActivity"
+            android:name="com.addie.xcall.ui.CallScreenActivity"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".android.ui.BaseActivity"
+            android:name="com.addie.xcall.ui.BaseActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".android.ui.SignupActivity"
+            android:name="com.addie.xcall.ui.SignupActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -50,25 +50,25 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".android.ui.MainActivity"
+            android:name="com.addie.xcall.ui.MainActivity"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".android.ui.ResetPasswordActivity"
+            android:name="com.addie.xcall.ui.ResetPasswordActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".android.ui.LoginActivity"
+            android:name="com.addie.xcall.ui.LoginActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <!-- FCM services -->
-        <service android:name=".android.services.CallNotificationFCMService">
+        <service android:name="com.addie.xcall.services.CallNotificationFCMService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
-        <service android:name=".android.services.CustomFirebaseInstanceIDService">
+        <service android:name="com.addie.xcall.services.CustomFirebaseInstanceIDService">
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
@@ -86,16 +86,16 @@
             android:resource="@color/colorAccent" />
 
         <activity
-            android:name=".android.ui.WaitingCallActivity"
+            android:name="com.addie.xcall.ui.WaitingCallActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".android.ui.PostCallActivity"
+            android:name="com.addie.xcall.ui.PostCallActivity"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".android.ui.NoResponseActivity"
+            android:name="com.addie.xcall.ui.NoResponseActivity"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />

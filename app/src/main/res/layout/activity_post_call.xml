@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:background="@color/background_grey"
     android:orientation="vertical"
-    tools:context=".android.ui.PostCallActivity">
+    tools:context=".xcall.ui.PostCallActivity">
 
     <include layout="@layout/toolbar_layout"/>
 
