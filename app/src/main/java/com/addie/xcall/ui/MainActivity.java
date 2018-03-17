@@ -21,7 +21,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.addie.R;
+import com.addie.xcall.R;
 import com.addie.xcall.receivers.NetworkChangeReceiver;
 import com.addie.xcall.services.SinchService;
 import com.addie.xcall.utils.CustomUtils;

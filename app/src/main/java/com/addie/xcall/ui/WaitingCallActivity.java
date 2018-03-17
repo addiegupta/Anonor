@@ -11,7 +11,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
-import com.addie.R;
+import com.addie.xcall.R;
 import com.addie.xcall.receivers.NetworkChangeReceiver;
 import com.addie.xcall.utils.NoResponseHandler;
 import com.google.firebase.auth.FirebaseAuth;

@@ -20,7 +20,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.addie.R;
+import com.addie.xcall.R;
 import com.addie.xcall.model.User;
 import com.addie.xcall.services.SinchService;
 import com.addie.xcall.utils.AudioPlayer;

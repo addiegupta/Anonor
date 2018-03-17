@@ -16,7 +16,7 @@ import android.widget.ProgressBar;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
-import com.addie.R;
+import com.addie.xcall.R;
 import com.addie.xcall.model.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;

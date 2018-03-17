@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">TalkTime</string>
+    <string name="app_name">xCall</string>
     <string name="title_activity_authenticator">Sign in</string>
 
     <!-- Strings related to login (Added most probably by Firebase)-->

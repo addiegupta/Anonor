@@ -2,7 +2,7 @@ package com.addie.xcall.ui;
 
 import android.app.Application;
 
-import com.addie.R;
+import com.addie.xcall.R;
 
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 

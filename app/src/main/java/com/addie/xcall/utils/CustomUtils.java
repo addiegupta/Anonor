@@ -36,7 +36,11 @@ public final class CustomUtils {
 //      update call status in Db
         mDBRef.child("callers").child(callerId).child(CALL_REQUEST_KEY).setValue("true");
 
-        String url = "https://us-central1-talktime-5f9a9.cloudfunctions.net/sendPush";
+        //old url
+//        String url = "https://us-central1-talktime-5f9a9.cloudfunctions.net/sendPush";
+
+        //new url
+        String url = "https://us-central1-xcall-c532d.cloudfunctions.net/sendPush";
 
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
             @Override

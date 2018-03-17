@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("com.talktime", appContext.getPackageName());
+        assertEquals("com.addie.xcall", appContext.getPackageName());
     }
 }

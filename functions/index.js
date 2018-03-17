@@ -7,31 +7,32 @@ exports.sendPush = functions.https.onRequest((request,response) => {
     console.log('sendPush called');
 	var userCallerId;
 
- if (!request.headers.authorization) {
+ 	if (!request.headers.authorization) {
       console.error('No Firebase ID token was passed');
       response.status(403).send('Unauthorized');
       return;
-  }
+ 	}
+	admin.auth().verifyIdToken(request.headers.authorization).then(decodedIdToken => {
+	    console.log('ID Token correctly decoded', decodedIdToken);
+		userCallerId = decodedIdToken.user_id;
+		console.log("UserCallerId",userCallerId)
+	    
+	    request.user = decodedIdToken;
+	    response.send(request.body.name +', Hello from Firebase!');
 
-admin.auth().verifyIdToken(request.headers.authorization).then(decodedIdToken => {
-    console.log('ID Token correctly decoded', decodedIdToken);
-	userCallerId = decodedIdToken.user_id;
-	console.log("UserCallerId",userCallerId)
-    
-    request.user = decodedIdToken;
-    response.send(request.body.name +', Hello from Firebase!');
-  }).catch(error => {
-    console.error('Error while verifying Firebase ID token:', error);
-    response.status(403).send('Unauthorized');
-  });
+		return null;
+
+	}).catch(error => {
+	    console.error('Error while verifying Firebase ID token:', error);
+	    response.status(403).send('Unauthorized');
+	});
 
     return loadUsers().then(users => {
         let tokens = [];
         for (let user of users) {
-        	if (user.fcm_token!=null) {
-
-            tokens.push(user.fcm_token);
-            console.log(user.fcm_token);
+        	if (user.fcm_token!==null) {
+	            tokens.push(user.fcm_token);
+    	        console.log(user.fcm_token);
         	}
         	else{
         		console.log("Empty token");
@@ -42,10 +43,10 @@ admin.auth().verifyIdToken(request.headers.authorization).then(decodedIdToken =>
         						callerId: userCallerId
             				}
             		}
-            		
+           
         console.log("userCallerId",userCallerId);
 
-        if (tokens.length!=0) {
+        if (tokens.length!==0) {
         	console.log("Returning tokens to push");
 
 

@@ -14,7 +14,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.addie.R;
+import com.addie.xcall.R;
 import com.addie.xcall.model.Report;
 import com.addie.xcall.receivers.NetworkChangeReceiver;
 import com.google.firebase.auth.FirebaseAuth;
