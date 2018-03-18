@@ -65,7 +65,7 @@ public class NoResponseActivity extends AppCompatActivity {
         mUserDatabase = FirebaseDatabase.getInstance();
         mDBRef = mUserDatabase.getReference();
 
-        mDBRef.child("callers").child(mAuth.getCurrentUser().getUid()).child(CALL_REQUEST_KEY).setValue("false");
+        mDBRef.child("users").child(mAuth.getCurrentUser().getUid()).child(CALL_REQUEST_KEY).setValue("false");
 
         getFirebaseIDToken();
         mTryAgainButton.setOnClickListener(new View.OnClickListener() {

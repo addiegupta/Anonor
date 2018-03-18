@@ -32,7 +32,7 @@ exports.sendPush = functions.https.onRequest((request,response) => {
         for (let user of users) {
         	if (user.fcm_token!==null) {
 	            tokens.push(user.fcm_token);
-    	        console.log(user.fcm_token);
+    	        console.log("FCM TOKEN ",user.fcm_token);
         	}
         	else{
         		console.log("Empty token");
@@ -49,9 +49,6 @@ exports.sendPush = functions.https.onRequest((request,response) => {
         if (tokens.length!==0) {
         	console.log("Returning tokens to push");
 
-
-
-
         	return admin.messaging().sendToDevice(tokens, payload);
         }
         else{
@@ -61,7 +58,7 @@ exports.sendPush = functions.https.onRequest((request,response) => {
 });
 
 function loadUsers() {
-    let dbRef = admin.database().ref('/receivers');
+    let dbRef = admin.database().ref('/users');
     let defer = new Promise((resolve, reject) => {
         dbRef.once('value', (snap) => {
             let data = snap.val();
@@ -71,8 +68,11 @@ function loadUsers() {
 
             if (dbSize <= 10) {
             	for(var user in data){
+            		if(data[user].call_request!=="true" && data[user].fcm_token!==""){
+
             		users.push(data[user]);
             		console.log("pushing user ", data[user]);
+            		}
             	}
             }
             else{
@@ -81,9 +81,11 @@ function loadUsers() {
     				console.log("random",randomnumber);
     				if(users.indexOf( randomnumber) > -1) continue;
 
-
+					if(data[randomnumber].call_request!=="true"  && data[randomnumber].fcm_token!==""){
+            	
     				users[users.length] = data[randomnumber];
     				console.log("more than 10,pushing",data[randomnumber]);
+					}
 				}
             }
             resolve(users);

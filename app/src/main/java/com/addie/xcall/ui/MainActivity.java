@@ -11,7 +11,6 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -44,7 +43,6 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 public class MainActivity extends BaseActivity implements SinchService.StartFailedListener {
 
 
-    private static final String IS_CALLER_KEY = "is_caller";
     private static final String SHARED_PREFS_KEY = "shared_prefs";
     private static final String FCM_TOKEN_KEY = "fcm_token";
     private static final String CALLERID_DATA_KEY = "callerId";
@@ -54,18 +52,15 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
     private FirebaseDatabase mUserDatabase;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private DatabaseReference mDBRef;
-    private boolean mIsCaller;
     private String mFirebaseIDToken;
     private String mOriginalCaller;
     private NetworkChangeReceiver networkChangeReceiver;
     private BroadcastReceiver mDialogReceiver;
     private AlertDialog mInternetDialog;
 
-    @Nullable
     @BindView(R.id.iv_talk_button)
     ImageView mTalkButtonImage;
 
-    @Nullable
     @BindView(R.id.iv_talk_message)
     ImageView mTalkMessage;
 
@@ -88,7 +83,6 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
         networkChangeReceiver = new NetworkChangeReceiver();
         registerReceiver(networkChangeReceiver, filter);
         SharedPreferences prefs = getSharedPreferences(SHARED_PREFS_KEY, Context.MODE_PRIVATE);
-        mIsCaller = prefs.getBoolean(IS_CALLER_KEY, true);
 
         mAuth = FirebaseAuth.getInstance();
         mUserDatabase = FirebaseDatabase.getInstance();
@@ -97,44 +91,37 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
         getFirebaseIDToken();
 
         Timber.plant(new Timber.DebugTree());
-        Timber.d("mIsCaller:" + String.valueOf(mIsCaller));
 
-        if (mIsCaller) {
-            setContentView(R.layout.activity_main_caller);
-            ButterKnife.bind(this);
+        setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
 
-            mToolbar.setTitle("");
-            setSupportActionBar(mToolbar);
+        mToolbar.setTitle("");
+        setSupportActionBar(mToolbar);
 
-            mTalkMessage.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    sendCallRequest();
-                }
-            });
-            mTalkButtonImage.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    sendCallRequest();
-                }
-            });
-
-        } else {
-            setContentView(R.layout.activity_main_receiver);
-            ButterKnife.bind(this);
-            mToolbar.setTitle("");
-            setSupportActionBar(mToolbar);
-
-            if (getIntent().hasExtra(CALLERID_DATA_KEY)) {
-                mOriginalCaller = getIntent().getStringExtra(CALLERID_DATA_KEY);
-
-                // Start CallScreenActivity
-                Intent callScreenActivity = new Intent(this, CallScreenActivity.class);
-                callScreenActivity.putExtra(CALLERID_DATA_KEY, mOriginalCaller);
-                startActivity(callScreenActivity);
+        mTalkMessage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sendCallRequest();
             }
+        });
+        mTalkButtonImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sendCallRequest();
+            }
+        });
+
+
+        if (getIntent().hasExtra(CALLERID_DATA_KEY)) {
+            mOriginalCaller = getIntent().getStringExtra(CALLERID_DATA_KEY);
+
+            // Start CallScreenActivity
+            Intent callScreenActivity = new Intent(this, CallScreenActivity.class);
+            callScreenActivity.putExtra(CALLERID_DATA_KEY, mOriginalCaller);
+            startActivity(callScreenActivity);
         }
     }
+
 
     @Override
     protected void onResume() {
@@ -289,12 +276,7 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
             @Override
             public void run() {
                 try {
-                    if (mIsCaller) {
-                        mDBRef.child("callers").child(mAuth.getCurrentUser().getUid()).child(FCM_TOKEN_KEY).removeValue();
-                    } else {
-                        mDBRef.child("receivers").child(mAuth.getCurrentUser().getUid()).child(FCM_TOKEN_KEY).removeValue();
-
-                    }
+                        mDBRef.child("users").child(mAuth.getCurrentUser().getUid()).child(FCM_TOKEN_KEY).removeValue();
                     FirebaseInstanceId.getInstance().deleteInstanceId();
                     FirebaseInstanceId.getInstance().getToken();
                     Timber.d(FirebaseInstanceId.getInstance().getToken());
@@ -313,7 +295,7 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
 
     @Override
     public void onStartFailed(SinchError error) {
-        Toast.makeText(this,"An error has occured.Please restart the app", Toast.LENGTH_LONG).show();
+        Toast.makeText(this, "An error has occured.Please restart the app", Toast.LENGTH_LONG).show();
     }
 
     @Override

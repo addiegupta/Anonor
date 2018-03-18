@@ -55,11 +55,9 @@ public class CallScreenActivity extends BaseActivity implements SensorEventListe
     private UpdateCallDurationTask mDurationTask;
     private String CALLER_SCREEN_BOOL_KEY = "caller_screen";
     private static final String CALLERID_DATA_KEY = "callerId";
-    private static final String IS_CALLER_KEY = "is_caller";
     private static final String SHARED_PREFS_KEY = "shared_prefs";
     private static final String DB_DURATION_KEY = "duration";
     private static final String CALL_REQUEST_KEY = "call_request";
-    private boolean mIsCaller;
     private boolean firstResume = true;
     private boolean mServiceConnected = false;
 
@@ -118,7 +116,6 @@ public class CallScreenActivity extends BaseActivity implements SensorEventListe
         mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 
         SharedPreferences preferences = getSharedPreferences(SHARED_PREFS_KEY, Context.MODE_PRIVATE);
-        mIsCaller = preferences.getBoolean(IS_CALLER_KEY, true);
 
         initialiseAuthAndDatabaseReference();
 
@@ -261,17 +258,18 @@ public class CallScreenActivity extends BaseActivity implements SensorEventListe
     private void createCallOrTooLate(final String callerId) {
 
 
-        Query query = mDBRef.child("callers");
+        Query query = mDBRef.child("users");
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.child(callerId).child(CALL_REQUEST_KEY).getValue().equals("true")) {
-                    mDBRef.child("callers").child(callerId).child(CALL_REQUEST_KEY).setValue("false");
+                    mDBRef.child("users").child(callerId).child(CALL_REQUEST_KEY).setValue("false");
                     if (mServiceConnected) {
                         createCall();
                     }
                 } else {
-                    Toast.makeText(CallScreenActivity.this, "Too late.Someone else has picked the call", Toast.LENGTH_LONG).show();
+                    //TODO Replace with proper activity
+                    Toast.makeText(CallScreenActivity.this, "Too late. Someone else has picked the call", Toast.LENGTH_LONG).show();
                     startActivity(new Intent(CallScreenActivity.this, MainActivity.class));
                     finish();
                 }
@@ -285,12 +283,7 @@ public class CallScreenActivity extends BaseActivity implements SensorEventListe
     }
 
     private void saveDuration(DataSnapshot snapshot) {
-        DataSnapshot list;
-        if (mIsCaller) {
-            list = snapshot.child("callers");
-        } else {
-            list = snapshot.child("receivers");
-        }
+        DataSnapshot list = snapshot.child("users");
         for (DataSnapshot ds : list.getChildren()) {
 
             if (ds.getKey().equals(mAuth.getCurrentUser().getUid())) {
@@ -305,7 +298,6 @@ public class CallScreenActivity extends BaseActivity implements SensorEventListe
         if (getSinchServiceInterface() != null && !getSinchServiceInterface().isStarted()) {
             getSinchServiceInterface().startClient(mAuth.getCurrentUser().getUid());
         }
-        if (mIsCaller) {
             Call call = getSinchServiceInterface().getCall(mCallId);
             if (call != null) {
                 call.answer();
@@ -315,12 +307,12 @@ public class CallScreenActivity extends BaseActivity implements SensorEventListe
                     mCallState.setText(R.string.connecting);
                 }
                 mOriginalReceiver = call.getRemoteUserId();
-            } else {
-                Toast.makeText(this, "An error occured", Toast.LENGTH_SHORT).show();
-                Timber.e("Started with invalid callId, aborting.");
-                finish();
             }
-        }
+//            else {
+//                Toast.makeText(this, "An error occured", Toast.LENGTH_SHORT).show();
+//                Timber.e("Started with invalid callId, aborting.");
+//                finish();
+//            }
     }
 
     private void createCall() {
@@ -389,9 +381,10 @@ public class CallScreenActivity extends BaseActivity implements SensorEventListe
             mSensorManager.registerListener(this, mProximity, SensorManager.SENSOR_DELAY_NORMAL);
         }
 
-        if (!mIsCaller && firstResume) {
-            firstResume = false;
-        } else {
+//        if (firstResume) {
+//            firstResume = false;
+//        }
+        else {
             mTimer = new Timer();
             mDurationTask = new UpdateCallDurationTask();
             mTimer.schedule(mDurationTask, 0, 500);
@@ -410,11 +403,6 @@ public class CallScreenActivity extends BaseActivity implements SensorEventListe
             call.hangup();
         }
         Intent postCallIntent = new Intent(CallScreenActivity.this, PostCallActivity.class);
-        if (mIsCaller) {
-            postCallIntent.putExtra(CALLERID_DATA_KEY, mOriginalReceiver);
-        } else {
-            postCallIntent.putExtra(CALLERID_DATA_KEY, mOriginalCaller);
-        }
 
         if (mProximity != null) {
             mSensorManager.unregisterListener(this);
@@ -444,11 +432,7 @@ public class CallScreenActivity extends BaseActivity implements SensorEventListe
                     Looper.prepare();
                 }
                 mTotalDuration += duration;
-                if (mIsCaller) {
-                    mDBRef.child("callers").child(mAuth.getCurrentUser().getUid()).child(DB_DURATION_KEY).setValue(mTotalDuration);
-                } else {
-                    mDBRef.child("receivers").child(mAuth.getCurrentUser().getUid()).child(DB_DURATION_KEY).setValue(mTotalDuration);
-                }
+                    mDBRef.child("users").child(mAuth.getCurrentUser().getUid()).child(DB_DURATION_KEY).setValue(mTotalDuration);
             }
         }).start();
     }
@@ -499,6 +483,20 @@ public class CallScreenActivity extends BaseActivity implements SensorEventListe
             mAudioManager.setSpeakerphoneOn(mIsSpeakerPhone);
             mAudioManager.setMicrophoneMute(mIsMicMuted);
             mAudioPlayer.stopProgressTone();
+
+            mTimer = new Timer();
+            mDurationTask = new UpdateCallDurationTask();
+            mTimer.schedule(mDurationTask, 0, 500);
+
+            mCallId = call.getCallId();
+            call.addCallListener(new SinchCallListener());
+            if (call.getState().toString().equals("INITIATING")) {
+
+                mCallState.setText(R.string.connecting);
+            } else {
+                mCallState.setText(call.getState().toString());
+            }
+
             String callState = call.getState().toString();
             if (callState.equals("INITIATING")) {
                 mCallState.setText(R.string.connecting);

@@ -31,7 +31,6 @@ public class PostCallActivity extends AppCompatActivity {
     private String mRemoteUser;
     private FirebaseAuth mAuth;
     private DatabaseReference mDBRef;
-    private boolean mIsCaller;
     private NetworkChangeReceiver networkChangeReceiver;
     private BroadcastReceiver mDialogReceiver;
     private AlertDialog mInternetDialog;
@@ -68,7 +67,6 @@ public class PostCallActivity extends AppCompatActivity {
 
         initialiseDatabase();
 
-        mIsCaller = getSharedPreferences(SHARED_PREFS_KEY, Context.MODE_PRIVATE).getBoolean(IS_CALLER_KEY, true);
         mRemoteUser = getIntent().getStringExtra(CALLERID_DATA_KEY);
         mDismissButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -158,13 +156,9 @@ public class PostCallActivity extends AppCompatActivity {
         String problemDescription = mProblemEditText.getText().toString().trim();
         boolean reportUser = mReportUserCheckbox.isChecked();
         Report callerReport = new Report(mRemoteUser, problemDescription, reportUser);
-        if (mIsCaller) {
 
-            mDBRef.child("problems").child("callers").child(uniqueUserId).push().setValue(callerReport);
-        } else {
-            mDBRef.child("problems").child("receivers").child(uniqueUserId).push().setValue(callerReport);
+            mDBRef.child("problems").child(uniqueUserId).push().setValue(callerReport);
 
-        }
         Toast.makeText(this, "Problem Submitted", Toast.LENGTH_SHORT).show();
         dismissActivity();
 

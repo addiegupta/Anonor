@@ -138,7 +138,7 @@ public class WaitingCallActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int id) {
                         dialog.cancel();
                         String callerId = mAuth.getCurrentUser().getUid();
-                        mDBRef.child("callers").child(callerId).child(CALL_REQUEST_KEY).setValue("false");
+                        mDBRef.child("users").child(callerId).child(CALL_REQUEST_KEY).setValue("false");
                         finish();
                     }
                 })

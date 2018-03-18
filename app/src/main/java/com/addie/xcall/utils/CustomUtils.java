@@ -34,7 +34,7 @@ public final class CustomUtils {
     public static void sendCallRequest(Context context,String callerId, DatabaseReference mDBRef, final String mFirebaseIDToken) {
 
 //      update call status in Db
-        mDBRef.child("callers").child(callerId).child(CALL_REQUEST_KEY).setValue("true");
+        mDBRef.child("users").child(callerId).child(CALL_REQUEST_KEY).setValue("true");
 
         //old url
 //        String url = "https://us-central1-talktime-5f9a9.cloudfunctions.net/sendPush";

@@ -66,44 +66,6 @@
 
         </android.support.design.widget.TextInputLayout>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:padding="8dp"
-            android:text="@string/type_of_caller"
-            android:textColor="@android:color/black"
-            android:textSize="18sp" />
-
-        <RadioGroup
-            android:id="@+id/radio_group_type_of_user"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:checkedButton="@+id/rb_caller"
-            android:orientation="horizontal">
-
-            <RadioButton
-                android:id="@+id/rb_caller"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="32dp"
-                android:layout_marginRight="32dp"
-                android:text="@string/caller_lowercase"
-                android:textColor="@android:color/black" />
-
-            <RadioButton
-                android:id="@+id/rb_receiver"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="32dp"
-                android:layout_marginStart="32dp"
-                android:layout_weight="1"
-                android:text="@string/receiver_lowercase"
-                android:textColor="@android:color/black" />
-        </RadioGroup>
-
-
         <Button
             android:id="@+id/sign_up_button"
             style="?android:textAppearanceSmall"

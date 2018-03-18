@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputLayout;
@@ -58,8 +57,6 @@ public class LoginActivity extends AppCompatActivity {
     private FirebaseAuth.AuthStateListener mAuthListener;
     private DatabaseReference mDBRef;
     private static final String SHARED_PREFS_KEY = "shared_prefs";
-    private static final String IS_CALLER_KEY = "is_caller";
-    private boolean mIsCaller;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,7 +107,6 @@ public class LoginActivity extends AppCompatActivity {
         mButtonLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 login();
             }
         });
@@ -153,12 +149,22 @@ public class LoginActivity extends AppCompatActivity {
                             }
                         } else {
 
-                            Query query = mDBRef.child("callers");
+                            Query query = mDBRef.child("users");
                             query.addListenerForSingleValueEvent
                                     (new ValueEventListener() {
                                          @Override
                                          public void onDataChange(DataSnapshot dataSnapshot) {
-                                             new CheckUserTask().execute(dataSnapshot);
+                                             String userId = auth.getCurrentUser().getUid();
+                                             SharedPreferences prefs = getSharedPreferences(SHARED_PREFS_KEY, Context.MODE_PRIVATE);
+                                             String fcmToken = prefs.getString(FCM_TOKEN_KEY, null);
+                                             mDBRef.child("users").child(userId).child(FCM_TOKEN_KEY).setValue(fcmToken);
+
+                                             mPBLoadingIndicator.setVisibility(View.GONE);
+
+                                             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                             startActivity(intent);
+                                             finish();
+
                                          }
 
                                          @Override
@@ -171,44 +177,6 @@ public class LoginActivity extends AppCompatActivity {
                 });
     }
 
-    private class CheckUserTask extends AsyncTask<DataSnapshot, Void, Void> {
-        @Override
-        protected Void doInBackground(final DataSnapshot... snapshots) {
-
-            String userId = auth.getCurrentUser().getUid();
-            DataSnapshot dataSnapshot = snapshots[0];
-            mIsCaller = false;
-            SharedPreferences prefs = getSharedPreferences(SHARED_PREFS_KEY, Context.MODE_PRIVATE);
-            String fcmToken = prefs.getString(FCM_TOKEN_KEY, null);
-            if (dataSnapshot.exists()) {
-                // dataSnapshot is the "callers" node with all children with email equal to user's email
-                for (DataSnapshot caller : dataSnapshot.getChildren()) {
-                    if (caller.getKey().equals(userId)) {
-                        mIsCaller = true;
-                        mDBRef.child("callers").child(userId).child(FCM_TOKEN_KEY).setValue(fcmToken);
-                    }
-                }
-                if (!mIsCaller) {
-                    mDBRef.child("receivers").child(userId).child(FCM_TOKEN_KEY).setValue(fcmToken);
-                }
-
-                prefs.edit().putBoolean(IS_CALLER_KEY, mIsCaller).apply();
-
-            }
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-            mPBLoadingIndicator.setVisibility(View.GONE);
-
-            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-            startActivity(intent);
-            finish();
-        }
-    }
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));

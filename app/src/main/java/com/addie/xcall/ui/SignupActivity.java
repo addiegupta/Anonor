@@ -13,7 +13,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
-import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import com.addie.xcall.R;
@@ -30,11 +29,9 @@ import com.google.firebase.database.ValueEventListener;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import timber.log.Timber;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class SignupActivity extends AppCompatActivity {
-    private static final String IS_CALLER_KEY = "is_caller";
     private static final String FCM_TOKEN = "fcm_token";
 
 
@@ -52,15 +49,12 @@ public class SignupActivity extends AppCompatActivity {
     Button mButtonResetPass;
     @BindView(R.id.til_signup_password)
     TextInputLayout mPasswordTIL;
-    @BindView(R.id.radio_group_type_of_user)
-    RadioGroup mTypeOfUserRadioGroup;
 
     private FirebaseAuth mAuth;
     private FirebaseDatabase mUserDatabase;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private DatabaseReference mDBRef;
     private static final String SHARED_PREFS_KEY = "shared_prefs";
-    private boolean mIsCaller;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +64,7 @@ public class SignupActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         mPasswordTIL.setTypeface(Typeface.createFromAsset(getAssets(),"fonts/nexa_light.ttf"));
+
         //Get Firebase mAuth instance
         mAuth = FirebaseAuth.getInstance();
 
@@ -155,34 +150,13 @@ public class SignupActivity extends AppCompatActivity {
                                     User user = new User(email, 0,fcmToken);
 
                                     String uniqueUserId = mAuth.getCurrentUser().getUid();
-                                    String typeOfUser;
-                                    int id = mTypeOfUserRadioGroup.getCheckedRadioButtonId();
-                                    if (id == R.id.rb_caller){
-                                        typeOfUser = getString(R.string.caller);
-                                    }
-                                    else {
-                                        typeOfUser = getString(R.string.receiver);
-                                    }
-
-
-                                    if (typeOfUser.equals(getString(R.string.caller))) {
-
-                                        mIsCaller = true;
-                                        mDBRef.child("callers").child(uniqueUserId).setValue(user);
-                                    } else if (typeOfUser.equals(getString(R.string.receiver))) {
-                                        mIsCaller = false;
-                                        mDBRef.child("receivers").child(uniqueUserId).setValue(user);
-                                    }
-
-                                    prefs.edit().putBoolean(IS_CALLER_KEY,mIsCaller).apply();
-                                    Timber.d("IsCaller: " + String.valueOf(mIsCaller));
+                                        mDBRef.child("users").child(uniqueUserId).setValue(user);
 
                                     startActivity(new Intent(SignupActivity.this, MainActivity.class));
                                     finish();
                                 }
                             }
                         });
-
             }
         });
 
