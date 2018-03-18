@@ -25,7 +25,6 @@ import com.addie.xcall.model.User;
 import com.addie.xcall.services.SinchService;
 import com.addie.xcall.utils.AudioPlayer;
 import com.addie.xcall.utils.NoResponseHandler;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -53,11 +52,12 @@ public class CallScreenActivity extends BaseActivity implements SensorEventListe
     private AudioPlayer mAudioPlayer;
     private Timer mTimer;
     private UpdateCallDurationTask mDurationTask;
-    private String CALLER_SCREEN_BOOL_KEY = "caller_screen";
-    private static final String CALLERID_DATA_KEY = "callerId";
     private static final String SHARED_PREFS_KEY = "shared_prefs";
     private static final String DB_DURATION_KEY = "duration";
+    private String mSinchId;
     private static final String CALL_REQUEST_KEY = "call_request";
+
+    private static final String SINCH_ID_KEY = "sinch_id";
     private boolean firstResume = true;
     private boolean mServiceConnected = false;
 
@@ -78,7 +78,6 @@ public class CallScreenActivity extends BaseActivity implements SensorEventListe
 
     private String mOriginalCaller;
     private String mOriginalReceiver;
-    private FirebaseAuth mAuth;
     private FirebaseDatabase mDatabase;
     private DatabaseReference mDBRef;
     private long mTotalDuration;
@@ -88,6 +87,13 @@ public class CallScreenActivity extends BaseActivity implements SensorEventListe
     private PowerManager.WakeLock mWakeLock;
     private boolean mIsSpeakerPhone = false;
     private boolean mIsMicMuted = false;
+
+
+
+
+    private static final String FCM_TOKEN_KEY = "fcm_token";
+    private static final String CALLERID_DATA_KEY = "callerId";
+    private String mFcmToken;
 
     private class UpdateCallDurationTask extends TimerTask {
 
@@ -115,7 +121,10 @@ public class CallScreenActivity extends BaseActivity implements SensorEventListe
 
         mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 
-        SharedPreferences preferences = getSharedPreferences(SHARED_PREFS_KEY, Context.MODE_PRIVATE);
+        SharedPreferences prefs = getSharedPreferences(SHARED_PREFS_KEY, Context.MODE_PRIVATE);
+        mFcmToken = prefs.getString(FCM_TOKEN_KEY, null);
+        mSinchId = prefs.getString(SINCH_ID_KEY, null);
+
 
         initialiseAuthAndDatabaseReference();
 
@@ -207,7 +216,6 @@ public class CallScreenActivity extends BaseActivity implements SensorEventListe
     }
 
     private void initialiseAuthAndDatabaseReference() {
-        mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance();
         mDBRef = mDatabase.getReference();
 
@@ -286,7 +294,7 @@ public class CallScreenActivity extends BaseActivity implements SensorEventListe
         DataSnapshot list = snapshot.child("users");
         for (DataSnapshot ds : list.getChildren()) {
 
-            if (ds.getKey().equals(mAuth.getCurrentUser().getUid())) {
+            if (ds.getKey().equals(mFcmToken)) {
                 mTotalDuration = ds.getValue(User.class).getDuration();
             }
         }
@@ -296,7 +304,7 @@ public class CallScreenActivity extends BaseActivity implements SensorEventListe
     public void onServiceConnected() {
         mServiceConnected = true;
         if (getSinchServiceInterface() != null && !getSinchServiceInterface().isStarted()) {
-            getSinchServiceInterface().startClient(mAuth.getCurrentUser().getUid());
+            getSinchServiceInterface().startClient(mSinchId);
         }
             Call call = getSinchServiceInterface().getCall(mCallId);
             if (call != null) {
@@ -317,7 +325,7 @@ public class CallScreenActivity extends BaseActivity implements SensorEventListe
 
     private void createCall() {
         try {
-            Call call = getSinchServiceInterface().callUser(mOriginalCaller);
+            Call call = getSinchServiceInterface().callUser(mOriginalCaller.substring(0,25));
 
             if (call == null) {
                 // Service failed for some reason, show a Toast and abort
@@ -432,7 +440,7 @@ public class CallScreenActivity extends BaseActivity implements SensorEventListe
                     Looper.prepare();
                 }
                 mTotalDuration += duration;
-                    mDBRef.child("users").child(mAuth.getCurrentUser().getUid()).child(DB_DURATION_KEY).setValue(mTotalDuration);
+                    mDBRef.child("users").child(mFcmToken).child(DB_DURATION_KEY).setValue(mTotalDuration);
             }
         }).start();
     }

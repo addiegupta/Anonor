@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AlertDialog;
@@ -26,6 +27,11 @@ public class WaitingCallActivity extends AppCompatActivity {
     private static final String CALL_REQUEST_KEY = "call_request";
 
 
+    private static final String SHARED_PREFS_KEY = "shared_prefs";
+    private static final String FCM_TOKEN_KEY = "fcm_token";
+
+    private String mFcmToken;
+
     private NetworkChangeReceiver networkChangeReceiver;
     private BroadcastReceiver mDialogReceiver;
     private FirebaseAuth mAuth;
@@ -42,6 +48,9 @@ public class WaitingCallActivity extends AppCompatActivity {
 
         initialiseAuthAndDatabaseReference();
 
+
+        SharedPreferences prefs = getSharedPreferences(SHARED_PREFS_KEY, Context.MODE_PRIVATE);
+        mFcmToken = prefs.getString(FCM_TOKEN_KEY, null);
 
         IntentFilter filter = new IntentFilter();
         filter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
@@ -137,8 +146,7 @@ public class WaitingCallActivity extends AppCompatActivity {
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         dialog.cancel();
-                        String callerId = mAuth.getCurrentUser().getUid();
-                        mDBRef.child("users").child(callerId).child(CALL_REQUEST_KEY).setValue("false");
+                        mDBRef.child("users").child(mFcmToken).child(CALL_REQUEST_KEY).setValue("false");
                         finish();
                     }
                 })

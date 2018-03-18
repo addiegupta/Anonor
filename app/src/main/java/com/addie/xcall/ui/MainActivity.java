@@ -10,7 +10,6 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -24,16 +23,9 @@ import com.addie.xcall.R;
 import com.addie.xcall.receivers.NetworkChangeReceiver;
 import com.addie.xcall.services.SinchService;
 import com.addie.xcall.utils.CustomUtils;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.GetTokenResult;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.iid.FirebaseInstanceId;
 import com.sinch.android.rtc.SinchError;
-
-import java.io.IOException;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -46,12 +38,13 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
     private static final String SHARED_PREFS_KEY = "shared_prefs";
     private static final String FCM_TOKEN_KEY = "fcm_token";
     private static final String CALLERID_DATA_KEY = "callerId";
+    private static final String SINCH_ID_KEY = "sinch_id";
 
 
-    private FirebaseAuth mAuth;
     private FirebaseDatabase mUserDatabase;
-    private FirebaseAuth.AuthStateListener mAuthListener;
     private DatabaseReference mDBRef;
+    private String mFcmToken;
+    private String mSinchId;
     private String mFirebaseIDToken;
     private String mOriginalCaller;
     private NetworkChangeReceiver networkChangeReceiver;
@@ -82,13 +75,16 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
 
         networkChangeReceiver = new NetworkChangeReceiver();
         registerReceiver(networkChangeReceiver, filter);
-        SharedPreferences prefs = getSharedPreferences(SHARED_PREFS_KEY, Context.MODE_PRIVATE);
 
-        mAuth = FirebaseAuth.getInstance();
+        SharedPreferences prefs = getSharedPreferences(SHARED_PREFS_KEY, Context.MODE_PRIVATE);
+        mFcmToken = prefs.getString(FCM_TOKEN_KEY, null);
+        mSinchId = prefs.getString(SINCH_ID_KEY, null);
+
+
         mUserDatabase = FirebaseDatabase.getInstance();
         mDBRef = mUserDatabase.getReference();
 
-        getFirebaseIDToken();
+//        getFirebaseIDToken();
 
         Timber.plant(new Timber.DebugTree());
 
@@ -114,6 +110,7 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
 
         if (getIntent().hasExtra(CALLERID_DATA_KEY)) {
             mOriginalCaller = getIntent().getStringExtra(CALLERID_DATA_KEY);
+            Timber.d("Original caller is :" + mOriginalCaller);
 
             // Start CallScreenActivity
             Intent callScreenActivity = new Intent(this, CallScreenActivity.class);
@@ -197,22 +194,22 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
         }
     }
 
-    /**
-     * Needed for authentication of user while using cloud functions
-     */
-    private void getFirebaseIDToken() {
-        mAuth.getCurrentUser().getToken(true)
-                .addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
-                    public void onComplete(@NonNull Task<GetTokenResult> task) {
-                        if (task.isSuccessful()) {
-                            mFirebaseIDToken = task.getResult().getToken();
-                        } else {
-                            // Handle error -> task.getException();
-                            task.getException().printStackTrace();
-                        }
-                    }
-                });
-    }
+//    /**
+//     * Needed for authentication of user while using cloud functions
+//     */
+//    private void getFirebaseIDToken() {
+//        mAuth.getCurrentUser().getToken(true)
+//                .addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
+//                    public void onComplete(@NonNull Task<GetTokenResult> task) {
+//                        if (task.isSuccessful()) {
+//                            mFirebaseIDToken = task.getResult().getToken();
+//                        } else {
+//                             Handle error -> task.getException();
+//                            task.getException().printStackTrace();
+//                        }
+//                    }
+//                });
+//    }
 
 
     @Override
@@ -235,62 +232,61 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
         menu.findItem(R.id.menu_main_action_sign_out).getActionView().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showSignOutAlertDialog();
+//                showSignOutAlertDialog();
             }
         });
         return super.onCreateOptionsMenu(menu);
     }
 
-    private void showSignOutAlertDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-
-        builder.setTitle(R.string.log_out_confirmation);
-        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
-        builder.setPositiveButton(R.string.sign_out, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                signOutUser();
-            }
-        });
-        builder.show();
-    }
+//    private void showSignOutAlertDialog() {
+//        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+//
+//        builder.setTitle(R.string.log_out_confirmation);
+//        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialog, int which) {
+//                dialog.dismiss();
+//            }
+//        });
+//        builder.setPositiveButton(R.string.sign_out, new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialog, int which) {
+//                signOutUser();
+//            }
+//        });
+//        builder.show();
+//    }
 
 
     private void sendCallRequest() {
 
-        String callerId = mAuth.getCurrentUser().getUid();
-        CustomUtils.sendCallRequest(this, callerId, mDBRef, mFirebaseIDToken);
+        CustomUtils.sendCallRequest(this, mFcmToken, mDBRef, mFirebaseIDToken);
     }
 
-    private void signOutUser() {
-
-        SharedPreferences prefs = getSharedPreferences(SHARED_PREFS_KEY, Context.MODE_PRIVATE);
-        prefs.edit().clear().apply();
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                        mDBRef.child("users").child(mAuth.getCurrentUser().getUid()).child(FCM_TOKEN_KEY).removeValue();
-                    FirebaseInstanceId.getInstance().deleteInstanceId();
-                    FirebaseInstanceId.getInstance().getToken();
-                    Timber.d(FirebaseInstanceId.getInstance().getToken());
-                    mAuth.signOut();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    Toast.makeText(MainActivity.this, "Error signing out", Toast.LENGTH_SHORT).show();
-                }
-            }
-        }).start();
-
-        finish();
-        startActivity(new Intent(MainActivity.this, LoginActivity.class));
-    }
+//    private void signOutUser() {
+//
+//        SharedPreferences prefs = getSharedPreferences(SHARED_PREFS_KEY, Context.MODE_PRIVATE);
+//        prefs.edit().clear().apply();
+//
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                try {
+//                        mDBRef.child("users").child(mAuth.getCurrentUser().getUid()).child(FCM_TOKEN_KEY).removeValue();
+//                    FirebaseInstanceId.getInstance().deleteInstanceId();
+//                    FirebaseInstanceId.getInstance().getToken();
+//                    Timber.d(FirebaseInstanceId.getInstance().getToken());
+//                    mAuth.signOut();
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                    Toast.makeText(MainActivity.this, "Error signing out", Toast.LENGTH_SHORT).show();
+//                }
+//            }
+//        }).start();
+//
+//        finish();
+//        startActivity(new Intent(MainActivity.this, LoginActivity.class));
+//    }
 
 
     @Override
@@ -310,7 +306,7 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
 
         //Register user
         if (getSinchServiceInterface() != null && !getSinchServiceInterface().isStarted()) {
-            getSinchServiceInterface().startClient(mAuth.getCurrentUser().getUid());
+            getSinchServiceInterface().startClient(mSinchId);
         }
 
     }

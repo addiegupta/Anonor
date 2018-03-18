@@ -31,7 +31,7 @@ public final class CustomUtils {
 
     private static String mFirebaseIDToken;
 
-    public static void sendCallRequest(Context context,String callerId, DatabaseReference mDBRef, final String mFirebaseIDToken) {
+    public static void sendCallRequest(Context context, final String callerId, DatabaseReference mDBRef, final String mFirebaseIDToken) {
 
 //      update call status in Db
         mDBRef.child("users").child(callerId).child(CALL_REQUEST_KEY).setValue("true");
@@ -56,7 +56,8 @@ public final class CustomUtils {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<>();
-                headers.put("Authorization", mFirebaseIDToken);
+//                headers.put("Authorization", mFirebaseIDToken);
+                headers.put("user_id",callerId);
                 return headers;
             }
         };
