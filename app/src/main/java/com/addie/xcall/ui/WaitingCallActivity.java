@@ -15,7 +15,6 @@ import android.widget.Toast;
 import com.addie.xcall.R;
 import com.addie.xcall.receivers.NetworkChangeReceiver;
 import com.addie.xcall.utils.NoResponseHandler;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -34,7 +33,6 @@ public class WaitingCallActivity extends AppCompatActivity {
 
     private NetworkChangeReceiver networkChangeReceiver;
     private BroadcastReceiver mDialogReceiver;
-    private FirebaseAuth mAuth;
     private FirebaseDatabase mDatabase;
     private DatabaseReference mDBRef;
     private BroadcastReceiver finishReceiver;
@@ -84,7 +82,6 @@ public class WaitingCallActivity extends AppCompatActivity {
     }
 
     private void initialiseAuthAndDatabaseReference() {
-        mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance();
         mDBRef = mDatabase.getReference();
 

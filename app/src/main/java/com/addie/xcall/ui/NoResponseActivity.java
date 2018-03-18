@@ -5,8 +5,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -16,10 +16,6 @@ import android.widget.Toast;
 import com.addie.xcall.R;
 import com.addie.xcall.receivers.NetworkChangeReceiver;
 import com.addie.xcall.utils.CustomUtils;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.GetTokenResult;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -33,13 +29,20 @@ public class NoResponseActivity extends AppCompatActivity {
     private static final String CALL_REQUEST_KEY = "call_request";
 
 
-    private FirebaseAuth mAuth;
     private FirebaseDatabase mUserDatabase;
     private DatabaseReference mDBRef;
-    private String mFirebaseIDToken;
     private NetworkChangeReceiver networkChangeReceiver;
     private BroadcastReceiver mDialogReceiver;
     private AlertDialog mInternetDialog;
+
+    private static final String SHARED_PREFS_KEY = "shared_prefs";
+    private static final String FCM_TOKEN_KEY = "fcm_token";
+    private static final String CALLERID_DATA_KEY = "callerId";
+    private static final String SINCH_ID_KEY = "sinch_id";
+
+
+    private String mFcmToken;
+    private String mSinchId;
 
 
     @BindView(R.id.btn_try_again_call)
@@ -60,14 +63,16 @@ public class NoResponseActivity extends AppCompatActivity {
         networkChangeReceiver = new NetworkChangeReceiver();
         registerReceiver(networkChangeReceiver, filter);
 
+        SharedPreferences prefs = getSharedPreferences(SHARED_PREFS_KEY, Context.MODE_PRIVATE);
+        mFcmToken = prefs.getString(FCM_TOKEN_KEY, null);
+        mSinchId = prefs.getString(SINCH_ID_KEY, null);
 
-        mAuth = FirebaseAuth.getInstance();
+
         mUserDatabase = FirebaseDatabase.getInstance();
         mDBRef = mUserDatabase.getReference();
 
-        mDBRef.child("users").child(mAuth.getCurrentUser().getUid()).child(CALL_REQUEST_KEY).setValue("false");
+        mDBRef.child("users").child(mFcmToken).child(CALL_REQUEST_KEY).setValue("false");
 
-        getFirebaseIDToken();
         mTryAgainButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -138,27 +143,10 @@ public class NoResponseActivity extends AppCompatActivity {
 
     private void tryCalllingAgain() {
 
-        String callerId = mAuth.getCurrentUser().getUid();
-        CustomUtils.sendCallRequest(this, callerId, mDBRef, mFirebaseIDToken);
+        CustomUtils.sendCallRequest(this, mSinchId, mDBRef);
         finish();
     }
 
-    /**
-     * Needed for authentication of user while using cloud functions
-     */
-    private void getFirebaseIDToken() {
-        mAuth.getCurrentUser().getToken(true)
-                .addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
-                    public void onComplete(@NonNull Task<GetTokenResult> task) {
-                        if (task.isSuccessful()) {
-                            mFirebaseIDToken = task.getResult().getToken();
-                        } else {
-                            // Handle error -> task.getException();
-                            task.getException().printStackTrace();
-                        }
-                    }
-                });
-    }
 
 
     @Override

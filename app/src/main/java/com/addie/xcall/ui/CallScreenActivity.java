@@ -58,7 +58,6 @@ public class CallScreenActivity extends BaseActivity implements SensorEventListe
     private static final String CALL_REQUEST_KEY = "call_request";
 
     private static final String SINCH_ID_KEY = "sinch_id";
-    private boolean firstResume = true;
     private boolean mServiceConnected = false;
 
     private AudioManager mAudioManager;
@@ -87,8 +86,6 @@ public class CallScreenActivity extends BaseActivity implements SensorEventListe
     private PowerManager.WakeLock mWakeLock;
     private boolean mIsSpeakerPhone = false;
     private boolean mIsMicMuted = false;
-
-
 
 
     private static final String FCM_TOKEN_KEY = "fcm_token";
@@ -306,26 +303,21 @@ public class CallScreenActivity extends BaseActivity implements SensorEventListe
         if (getSinchServiceInterface() != null && !getSinchServiceInterface().isStarted()) {
             getSinchServiceInterface().startClient(mSinchId);
         }
-            Call call = getSinchServiceInterface().getCall(mCallId);
-            if (call != null) {
-                call.answer();
-                call.addCallListener(new SinchCallListener());
-                mCallState.setText(call.getState().toString());
-                if (call.getState().toString().equals("INITIATING")) {
-                    mCallState.setText(R.string.connecting);
-                }
-                mOriginalReceiver = call.getRemoteUserId();
+        Call call = getSinchServiceInterface().getCall(mCallId);
+        if (call != null) {
+            call.answer();
+            call.addCallListener(new SinchCallListener());
+            mCallState.setText(call.getState().toString());
+            if (call.getState().toString().equals("INITIATING")) {
+                mCallState.setText(R.string.connecting);
             }
-//            else {
-//                Toast.makeText(this, "An error occured", Toast.LENGTH_SHORT).show();
-//                Timber.e("Started with invalid callId, aborting.");
-//                finish();
-//            }
+            mOriginalReceiver = call.getRemoteUserId();
+        }
     }
 
     private void createCall() {
         try {
-            Call call = getSinchServiceInterface().callUser(mOriginalCaller.substring(0,25));
+            Call call = getSinchServiceInterface().callUser(mOriginalCaller.substring(0, 25));
 
             if (call == null) {
                 // Service failed for some reason, show a Toast and abort
@@ -388,11 +380,7 @@ public class CallScreenActivity extends BaseActivity implements SensorEventListe
         if (mProximity != null) {
             mSensorManager.registerListener(this, mProximity, SensorManager.SENSOR_DELAY_NORMAL);
         }
-
-//        if (firstResume) {
-//            firstResume = false;
-//        }
-        else {
+   else {
             mTimer = new Timer();
             mDurationTask = new UpdateCallDurationTask();
             mTimer.schedule(mDurationTask, 0, 500);
@@ -411,7 +399,7 @@ public class CallScreenActivity extends BaseActivity implements SensorEventListe
             call.hangup();
         }
         Intent postCallIntent = new Intent(CallScreenActivity.this, PostCallActivity.class);
-
+        postCallIntent.putExtra(CALLERID_DATA_KEY, mOriginalCaller);
         if (mProximity != null) {
             mSensorManager.unregisterListener(this);
         }
@@ -440,7 +428,7 @@ public class CallScreenActivity extends BaseActivity implements SensorEventListe
                     Looper.prepare();
                 }
                 mTotalDuration += duration;
-                    mDBRef.child("users").child(mFcmToken).child(DB_DURATION_KEY).setValue(mTotalDuration);
+                mDBRef.child("users").child(mFcmToken).child(DB_DURATION_KEY).setValue(mTotalDuration);
             }
         }).start();
     }

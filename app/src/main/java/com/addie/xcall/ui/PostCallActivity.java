@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -17,26 +18,32 @@ import android.widget.Toast;
 import com.addie.xcall.R;
 import com.addie.xcall.model.Report;
 import com.addie.xcall.receivers.NetworkChangeReceiver;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import timber.log.Timber;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class PostCallActivity extends AppCompatActivity {
 
     private static final String CALLERID_DATA_KEY = "callerId";
     private String mRemoteUser;
-    private FirebaseAuth mAuth;
     private DatabaseReference mDBRef;
     private NetworkChangeReceiver networkChangeReceiver;
     private BroadcastReceiver mDialogReceiver;
     private AlertDialog mInternetDialog;
 
 
-    private static final String IS_CALLER_KEY = "is_caller";
+
+    private static final String FCM_TOKEN_KEY = "fcm_token";
+    private static final String SINCH_ID_KEY = "sinch_id";
+
+
+    private String mFcmToken;
+    private String mSinchId;
+
     private static final String SHARED_PREFS_KEY = "shared_prefs";
 
 
@@ -68,6 +75,7 @@ public class PostCallActivity extends AppCompatActivity {
         initialiseDatabase();
 
         mRemoteUser = getIntent().getStringExtra(CALLERID_DATA_KEY);
+        Timber.d("Got remote user " + mRemoteUser);
         mDismissButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -84,7 +92,6 @@ public class PostCallActivity extends AppCompatActivity {
 
     private void initialiseDatabase() {
         //Get Firebase mAuth instance
-        mAuth = FirebaseAuth.getInstance();
         mDBRef = FirebaseDatabase.getInstance().getReference();
     }
 
@@ -95,7 +102,6 @@ public class PostCallActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         createDialogReceiver();
-
     }
 
 
@@ -151,13 +157,15 @@ public class PostCallActivity extends AppCompatActivity {
     }
 
     private void submitProblem() {
+        SharedPreferences prefs = getSharedPreferences(SHARED_PREFS_KEY, Context.MODE_PRIVATE);
+        mFcmToken = prefs.getString(FCM_TOKEN_KEY, null);
+        mSinchId = prefs.getString(SINCH_ID_KEY, null);
 
-        String uniqueUserId = mAuth.getCurrentUser().getUid();
         String problemDescription = mProblemEditText.getText().toString().trim();
         boolean reportUser = mReportUserCheckbox.isChecked();
         Report callerReport = new Report(mRemoteUser, problemDescription, reportUser);
 
-            mDBRef.child("problems").child(uniqueUserId).push().setValue(callerReport);
+            mDBRef.child("problems").child(mFcmToken).push().setValue(callerReport);
 
         Toast.makeText(this, "Problem Submitted", Toast.LENGTH_SHORT).show();
         dismissActivity();

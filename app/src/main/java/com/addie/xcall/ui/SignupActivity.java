@@ -51,8 +51,6 @@ public class SignupActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-
-
                 SharedPreferences prefs = getSharedPreferences(SHARED_PREFS_KEY, Context.MODE_PRIVATE);
                 String fcmToken = prefs.getString(FCM_TOKEN, null);
                 User user = new User(0, fcmToken);

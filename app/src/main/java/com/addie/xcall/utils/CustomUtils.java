@@ -3,19 +3,14 @@ package com.addie.xcall.utils;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.annotation.NonNull;
 
+import com.addie.xcall.ui.WaitingCallActivity;
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.addie.xcall.ui.WaitingCallActivity;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.GetTokenResult;
 import com.google.firebase.database.DatabaseReference;
 
 import java.util.HashMap;
@@ -29,9 +24,8 @@ public final class CustomUtils {
 
     private static final String CALL_REQUEST_KEY = "call_request";
 
-    private static String mFirebaseIDToken;
 
-    public static void sendCallRequest(Context context, final String callerId, DatabaseReference mDBRef, final String mFirebaseIDToken) {
+    public static void sendCallRequest(Context context, final String callerId, DatabaseReference mDBRef) {
 
 //      update call status in Db
         mDBRef.child("users").child(callerId).child(CALL_REQUEST_KEY).setValue("true");
@@ -56,7 +50,6 @@ public final class CustomUtils {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<>();
-//                headers.put("Authorization", mFirebaseIDToken);
                 headers.put("user_id",callerId);
                 return headers;
             }
@@ -66,25 +59,5 @@ public final class CustomUtils {
 
         context.startActivity(new Intent(context, WaitingCallActivity.class)/*.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY)*/);
     }
-
-    /**
-     * Needed for authentication of user while using cloud functions
-     */
-    public static String getFirebaseIDToken(FirebaseAuth mAuth) {
-        mAuth.getCurrentUser().getToken(true)
-                .addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
-                    public void onComplete(@NonNull Task<GetTokenResult> task) {
-                        if (task.isSuccessful()) {
-                            mFirebaseIDToken = task.getResult().getToken();
-
-                        } else {
-                            // Handle error -> task.getException();
-                            task.getException().printStackTrace();
-                        }
-                    }
-                });
-        return mFirebaseIDToken;
-    }
-
 
 }

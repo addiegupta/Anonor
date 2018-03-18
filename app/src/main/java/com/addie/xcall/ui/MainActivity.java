@@ -45,7 +45,6 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
     private DatabaseReference mDBRef;
     private String mFcmToken;
     private String mSinchId;
-    private String mFirebaseIDToken;
     private String mOriginalCaller;
     private NetworkChangeReceiver networkChangeReceiver;
     private BroadcastReceiver mDialogReceiver;
@@ -84,7 +83,6 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
         mUserDatabase = FirebaseDatabase.getInstance();
         mDBRef = mUserDatabase.getReference();
 
-//        getFirebaseIDToken();
 
         Timber.plant(new Timber.DebugTree());
 
@@ -194,22 +192,6 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
         }
     }
 
-//    /**
-//     * Needed for authentication of user while using cloud functions
-//     */
-//    private void getFirebaseIDToken() {
-//        mAuth.getCurrentUser().getToken(true)
-//                .addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
-//                    public void onComplete(@NonNull Task<GetTokenResult> task) {
-//                        if (task.isSuccessful()) {
-//                            mFirebaseIDToken = task.getResult().getToken();
-//                        } else {
-//                             Handle error -> task.getException();
-//                            task.getException().printStackTrace();
-//                        }
-//                    }
-//                });
-//    }
 
 
     @Override
@@ -232,62 +214,18 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
         menu.findItem(R.id.menu_main_action_sign_out).getActionView().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                showSignOutAlertDialog();
             }
         });
         return super.onCreateOptionsMenu(menu);
     }
 
-//    private void showSignOutAlertDialog() {
-//        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-//
-//        builder.setTitle(R.string.log_out_confirmation);
-//        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-//            @Override
-//            public void onClick(DialogInterface dialog, int which) {
-//                dialog.dismiss();
-//            }
-//        });
-//        builder.setPositiveButton(R.string.sign_out, new DialogInterface.OnClickListener() {
-//            @Override
-//            public void onClick(DialogInterface dialog, int which) {
-//                signOutUser();
-//            }
-//        });
-//        builder.show();
-//    }
+
 
 
     private void sendCallRequest() {
 
-        CustomUtils.sendCallRequest(this, mFcmToken, mDBRef, mFirebaseIDToken);
+        CustomUtils.sendCallRequest(this, mFcmToken, mDBRef);
     }
-
-//    private void signOutUser() {
-//
-//        SharedPreferences prefs = getSharedPreferences(SHARED_PREFS_KEY, Context.MODE_PRIVATE);
-//        prefs.edit().clear().apply();
-//
-//        new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//                try {
-//                        mDBRef.child("users").child(mAuth.getCurrentUser().getUid()).child(FCM_TOKEN_KEY).removeValue();
-//                    FirebaseInstanceId.getInstance().deleteInstanceId();
-//                    FirebaseInstanceId.getInstance().getToken();
-//                    Timber.d(FirebaseInstanceId.getInstance().getToken());
-//                    mAuth.signOut();
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                    Toast.makeText(MainActivity.this, "Error signing out", Toast.LENGTH_SHORT).show();
-//                }
-//            }
-//        }).start();
-//
-//        finish();
-//        startActivity(new Intent(MainActivity.this, LoginActivity.class));
-//    }
-
 
     @Override
     public void onStartFailed(SinchError error) {

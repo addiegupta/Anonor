@@ -54,14 +54,6 @@
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name="com.addie.xcall.ui.ResetPasswordActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name="com.addie.xcall.ui.LoginActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar" />
         <!-- FCM services -->
         <service android:name="com.addie.xcall.services.CallNotificationFCMService">
             <intent-filter>
