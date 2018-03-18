@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_grey"
@@ -8,25 +9,39 @@
     <include layout="@layout/toolbar_layout" />
 
     <ImageView
-        android:id="@+id/iv_talk_button"
+        android:id="@+id/iv_main_mask"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginLeft="64dp"
         android:layout_marginRight="64dp"
-        android:layout_marginTop="64dp"
+        android:layout_marginTop="48dp"
         android:layout_weight="2"
-        android:src="@drawable/phone_to_call" />
+        android:src="@drawable/mask" />
 
-    <ImageView
-        android:id="@+id/iv_talk_message"
+    <TextView
+        android:id="@+id/tv_main_call_message"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="128dp"
+        android:layout_marginBottom="32dp"
         android:layout_marginLeft="64dp"
+        android:gravity="center_horizontal"
         android:layout_marginRight="64dp"
         android:layout_weight="1"
-        android:src="@drawable/call_someone_text" />
+        android:text="@string/start_calling"
+        android:textAppearance="@style/Base.Widget.AppCompat.ActionBar.Solid"
+        android:textSize="28sp" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_main_call"
+        android:layout_width="96dp"
+        android:layout_height="96dp"
+        android:scaleType="center"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="32dp"
+        app:backgroundTint="@color/colorPrimary"
+        android:src="@drawable/ic_phone_forwarded_white_24dp"
+        app:rippleColor="@color/colorPrimaryDark" />
 
 </LinearLayout>

@@ -10,13 +10,12 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.addie.xcall.R;
@@ -50,11 +49,8 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
     private BroadcastReceiver mDialogReceiver;
     private AlertDialog mInternetDialog;
 
-    @BindView(R.id.iv_talk_button)
-    ImageView mTalkButtonImage;
-
-    @BindView(R.id.iv_talk_message)
-    ImageView mTalkMessage;
+    @BindView(R.id.fab_main_call)
+    FloatingActionButton mCallFAB;
 
     @BindView(R.id.toolbar)
     Toolbar mToolbar;
@@ -92,13 +88,7 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
         mToolbar.setTitle("");
         setSupportActionBar(mToolbar);
 
-        mTalkMessage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                sendCallRequest();
-            }
-        });
-        mTalkButtonImage.setOnClickListener(new View.OnClickListener() {
+        mCallFAB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 sendCallRequest();
@@ -192,8 +182,6 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
         }
     }
 
-
-
     @Override
     protected void onPause() {
         super.onPause();
@@ -207,19 +195,6 @@ public class MainActivity extends BaseActivity implements SinchService.StartFail
         unregisterReceiver(networkChangeReceiver);
 
     }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        menu.findItem(R.id.menu_main_action_sign_out).getActionView().setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-            }
-        });
-        return super.onCreateOptionsMenu(menu);
-    }
-
-
 
 
     private void sendCallRequest() {

@@ -12,7 +12,7 @@ public class TalkApplication extends Application {
         super.onCreate();
 
         CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
-                .setDefaultFontPath("fonts/nexa_light.ttf")
+                .setDefaultFontPath("fonts/ubuntu_light.ttf")
                 .setFontAttrId(R.attr.fontPath)
                 .build()
         );

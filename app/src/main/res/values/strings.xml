@@ -1,68 +1,28 @@
 <resources>
     <string name="app_name">xCall</string>
-    <string name="title_activity_authenticator">Sign in</string>
 
     <!-- Strings related to login (Added most probably by Firebase)-->
-    <string name="prompt_email">email</string>
-    <string name="prompt_password">password (optional)</string>
-    <string name="action_sign_in">sign in or register</string>
-    <string name="action_sign_up">sign up</string>
-    <string name="error_invalid_email">This email address is invalid</string>
-    <string name="error_invalid_password">This password is too short</string>
-    <string name="error_incorrect_password">This password is incorrect</string>
-    <string name="error_field_required">This field is required</string>
-
 
     <!--Strings from Firebase auth demo-->
-    <string name="email">email</string>
-    <string name="minimum_password">Password should be at least 6 characters long</string>
-    <string name="auth_failed">Authentication failed, check your login credentials and internet connection or sign up</string>
-    <string name="change_email">Change Email</string>
-    <string name="change_password">Change Password</string>
-    <string name="send_password_reset_email">Send Password reset email</string>
-    <string name="remove_user">Remove user</string>
-    <string name="new_pass">New Password</string>
-    <string name="title_activity_profile">Firebase</string>
-    <string name="title_activity_login">Sign in</string>
-    <string name="hint_email">email</string>
-    <string name="hint_password">password</string>
-    <string name="hint_name">Fullname</string>
-    <string name="btn_login">login</string>
-    <string name="btn_link_to_register">Don\'t have an account? Sign Up here!</string>
-    <string name="btn_link_to_login">Already registered? Login here!</string>
-    <string name="title_activity_reset_password">ResetPasswordActivity</string>
-    <string name="btn_forgot_password">Forgot your password?</string>
-    <string name="btn_reset_password">reset password</string>
     <string name="btn_back">Back</string>
-    <string name="hint_new_email">New Email</string>
     <string name="change">Change</string>
     <string name="send">Send</string>
     <string name="remove">Remove</string>
-    <string name="sign_out">Log Out</string>
-    <string name="lbl_forgot_password">Forgot password?</string>
-    <string name="forgot_password_msg">Enter your email address to receive instructions for resetting your password</string>
     <string name="mic_permission_required">This application needs permission to use your microphone to function properly.</string>
     <string name="may_answer_call_now">You may now answer the call</string>
-    <string name="enter_email_toast">Enter email address!</string>
-    <string name="enter_pass_toast">Enter password!</string>
-    <string name="enter_registered_email_toast">Enter your registered email id</string>
-    <string name="pass_reset_instructions_sent_toast">Instructions to reset your password have been sent to your email</string>
-    <string name="failed_send_reset_pass_email_pass">Failed to send reset email</string>
-    <string name="type_of_caller">type of user</string>
     <string name="cd_app_logo">Logo of the App</string>
     <string name="caller">Caller</string>
     <string name="receiver">Receiver</string>
     <string name="cancel">Cancel</string>
-    <string name="log_out_confirmation">Are you sure you want to log out?</string>
-    <string name="calling_people_message">Calling people...</string>
+    <string name="calling_people_message">Connecting to a random xCall user</string>
     <string name="call_disconnected">Call Disconnected</string>
     <string name="post_call_report_message_pt1">Had any problems with the call?</string>
     <string name="post_call_report_message_pt2">Tell us about it</string>
     <string name="describe_your_problem">Describe your problem</string>
     <string name="submit_problem">Submit Problem</string>
     <string name="dismiss">Dismiss</string>
-    <string name="no_response_message">we couldn\'t find anyone for you to talk to right now</string>
-    <string name="try_again">try again</string>
+    <string name="no_response_message">No one is available right now.Try Again?</string>
+    <string name="try_again">Try Again</string>
     <string name="mic_is_muted">Microphone Muted</string>
     <string name="mic_is_unmuted">Microphone Unmuted</string>
     <string name="speakerphone_on">Speakerphone On</string>
@@ -72,9 +32,9 @@
     <string name="connected">connected</string>
     <string name="sorry">sorry...</string>
     <string name="end_call">end call</string>
-    <string name="log_out">Logout</string>
     <string name="no_internet">No Internet Access</string>
     <string name="caller_lowercase">caller</string>
     <string name="receiver_lowercase">receiver</string>
+    <string name="start_calling">Call an anonymous person now!</string>
 
 </resources>

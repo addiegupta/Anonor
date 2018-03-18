@@ -13,9 +13,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
 import android.os.PowerManager;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -68,8 +68,8 @@ public class CallScreenActivity extends BaseActivity implements SensorEventListe
     TextView mCallDuration;
     @BindView(R.id.callState)
     TextView mCallState;
-    @BindView(R.id.hangupButton)
-    Button mEndCallButton;
+    @BindView(R.id.fab_call_screen_end_call)
+    FloatingActionButton mEndCallButton;
     @BindView(R.id.btn_speakerphone)
     ImageButton mSpeakerPhoneButton;
     @BindView(R.id.btn_microphone)

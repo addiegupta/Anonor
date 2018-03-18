@@ -12,7 +12,7 @@
     <style name="AppTheme.Widget"/>
 
     <style name="AppTheme.Widget.TextView" parent="android:Widget.Holo.TextView">
-        <item name="fontPath">fonts/nexa_light.ttf</item>
+        <item name="fontPath">fonts/ubuntu_light.ttf</item>
     </style>
 
     <style name="AppTheme.NoActionBar">

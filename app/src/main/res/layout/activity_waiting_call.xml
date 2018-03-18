@@ -13,12 +13,12 @@
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginLeft="78dp"
-        android:layout_marginRight="64dp"
+        android:layout_marginLeft="96dp"
+        android:layout_marginRight="96dp"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="16dp"
         android:layout_weight="8"
-        android:src="@drawable/phone_ringing" />
+        android:src="@drawable/ic_phone_in_talk_black_24dp" />
 
 
     <ProgressBar
@@ -31,56 +31,18 @@
         android:layout_marginRight="32dp"
         android:layout_weight="1"
         android:indeterminate="true" />
-    <ImageView
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginLeft="32dp"
         android:layout_marginRight="32dp"
+        android:textAppearance="@style/Base.Widget.AppCompat.ActionBar.Solid"
+        android:textSize="30sp"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center"
+        android:textStyle="bold"
         android:layout_marginBottom="32dp"
         android:layout_weight="5"
-        android:src="@drawable/calling_message" />
+        android:text="@string/calling_people_message"/>
 
 </LinearLayout>
-
-
-    <!--
-
-    <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/colorPrimaryDark"
-        tools:contecom.talktimetime.ui.WaitingCallActivity">
-
-        <ProgressBar
-            android:id="@+id/pb_calling_people"
-            style="?android:attr/progressBarStyleHorizontal"
-            android:layout_width="183dp"
-            android:layout_height="34dp"
-            android:indeterminate="true"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:layout_editor_absoluteX="33dp" />
-
-
-        <TextView
-            android:id="@+id/tv_calling_people_message"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/calling_people_message"
-            android:textColor="@android:color/white"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            android:textSize="28sp"
-            app:layout_constraintTop_toTopOf="parent"
-            fontPath="fonts/nexa_bold.ttf"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            app:layout_constraintBottom_toTopOf="@+id/pb_calling_people"
-            app:layout_constraintVertical_bias="0.868"
-            tools:ignore="MissingPrefix" />
-    </android.support.constraint.ConstraintLayout>
-    -->

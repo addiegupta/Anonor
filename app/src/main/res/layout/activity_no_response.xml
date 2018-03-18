@@ -11,32 +11,31 @@
     <include layout="@layout/toolbar_layout"/>
 
 
-    <ImageView
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:padding="16dp"
-        android:src="@drawable/no_response_message" />
+        android:textAppearance="@style/Base.Widget.AppCompat.ActionBar.Solid"
+        android:textStyle="bold"
+        android:layout_centerHorizontal="true"
+        android:textSize="32sp"
+        android:layout_marginTop="32dp"
+        android:layout_alignParentTop="true"
+        android:id="@+id/tv_no_response_message"
+        android:text="@string/no_response_message"
+        android:padding="16dp" />
 
-    <Button
-        android:id="@+id/btn_try_again_call"
-        style="@style/Widget.AppCompat.Button.Borderless.Colored"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textAllCaps="false"
-        android:textColor="#ecf0f1"
-        android:layout_marginBottom="8dp"
-        android:layout_marginLeft="12dp"
-        android:textSize="28sp"
-        android:layout_marginRight="12dp"
-        android:text="@string/try_again"
-        android:background="@drawable/button_shape_green"
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_no_response_call"
+        android:layout_width="96dp"
+        android:layout_marginBottom="32dp"
+        android:layout_height="96dp"
+        android:contentDescription="@string/try_again"
+        android:scaleType="center"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintVertical_bias="1.0"
-        tools:layout_editor_absoluteX="8dp" />
+        android:layout_centerHorizontal="true"
+        app:backgroundTint="@color/colorPrimary"
+        android:src="@drawable/ic_phone_forwarded_white_24dp"
+        app:rippleColor="@color/colorPrimaryDark" />
 
 
 </RelativeLayout>
