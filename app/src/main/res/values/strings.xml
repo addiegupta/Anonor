@@ -30,7 +30,6 @@
     <string name="problem_involving_caller">Problems with the caller?</string>
     <string name="connecting">connecting</string>
     <string name="connected">connected</string>
-    <string name="sorry">sorry...</string>
     <string name="end_call">end call</string>
     <string name="no_internet">No Internet Access</string>
     <string name="caller_lowercase">caller</string>

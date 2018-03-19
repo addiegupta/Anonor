@@ -18,6 +18,9 @@ import java.util.Map;
 
 import timber.log.Timber;
 
+/**
+ * Helper functions
+ */
 public final class CustomUtils {
 
 
@@ -27,13 +30,10 @@ public final class CustomUtils {
 
     public static void sendCallRequest(Context context, final String callerId, DatabaseReference mDBRef) {
 
-//      update call status in Db
+ //      update call status in Db
         mDBRef.child("users").child(callerId).child(CALL_REQUEST_KEY).setValue("true");
 
-        //old url
-//        String url = "https://us-central1-talktime-5f9a9.cloudfunctions.net/sendPush";
-
-        //new url
+        //Cloud function url
         String url = "https://us-central1-xcall-c532d.cloudfunctions.net/sendPush";
 
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {

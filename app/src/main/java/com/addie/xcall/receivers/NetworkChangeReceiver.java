@@ -8,6 +8,10 @@ import com.addie.xcall.utils.NetworkUtil;
 
 import timber.log.Timber;
 
+/**
+ * Sends an intent when network connection changes state.
+ * Used to display alert dialog when internet connection is not available and stop the app
+ */
 public class NetworkChangeReceiver extends BroadcastReceiver {
 
     @Override

@@ -16,6 +16,9 @@ import com.google.firebase.messaging.RemoteMessage;
 
 import timber.log.Timber;
 
+/**
+ * Service to handle FCM notifications which is the main mechanism to send calls
+ */
 public class CallNotificationFCMService extends FirebaseMessagingService {
     private static final String TAG = "FCMService";
 
@@ -33,6 +36,10 @@ public class CallNotificationFCMService extends FirebaseMessagingService {
         }
     }
 
+    /**
+     * Triggered when a FCM message is received
+     * @param remoteMessage
+     */
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
 
@@ -45,6 +52,10 @@ public class CallNotificationFCMService extends FirebaseMessagingService {
         }
     }
 
+    /**
+     * creates notification
+     * @param callerId contains the sinch id of the caller
+     */
     private void createNotification(String callerId) {
 
 
@@ -78,6 +89,11 @@ public class CallNotificationFCMService extends FirebaseMessagingService {
         removeNotificationAfter30s(tag, id);
     }
 
+    /**
+     * Removes the notification after 30 seconds as the call can no longer be picked up
+     * @param tag tag of the notification
+     * @param id id of the notification
+     */
     private void removeNotificationAfter30s(final String tag, final int id) {
 
         final NotificationManager notificationManager =

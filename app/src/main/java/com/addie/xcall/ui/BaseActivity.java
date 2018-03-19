@@ -9,6 +9,9 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.addie.xcall.services.SinchService;
 
+/**
+ * A base activity to extend all activities from so that Sinch can be properly used
+ */
     // Sinch code
 public abstract class BaseActivity extends AppCompatActivity implements ServiceConnection{
 

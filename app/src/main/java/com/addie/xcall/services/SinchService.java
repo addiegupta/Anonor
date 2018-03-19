@@ -16,17 +16,15 @@ import com.sinch.android.rtc.calling.Call;
 import com.sinch.android.rtc.calling.CallClient;
 import com.sinch.android.rtc.calling.CallClientListener;
 
+/**
+ * Sinch calling api functions
+ */
 public class SinchService extends Service {
 
-    // Unique API key addiegupta
+    // Unique API key
     private static final String APP_KEY = "f943887a-b801-421b-bdc9-6fd83bda6511";
     private static final String APP_SECRET = "OWVv6f0mikqoUsLWr/N3UQ==";
     private static final String ENVIRONMENT = "clientapi.sinch.com";
-
-    // Unique API key(old)
-//    private static final String APP_KEY = "fc940c9c-16de-4508-b545-b5f5d0a547dc";
-//    private static final String APP_SECRET = "q/xIHQAg+0uL/OMPAZwOfQ==";
-//    private static final String ENVIRONMENT = "clientapi.sinch.com";
 
     public static final String CALL_ID = "CALL_ID";
     static final String TAG = SinchService.class.getSimpleName();

@@ -8,6 +8,9 @@ import android.util.Log;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
 
+/**
+ * Generates an FCM token and stores it in shared preferences
+ */
 public class CustomFirebaseInstanceIDService extends FirebaseInstanceIdService {
 
 

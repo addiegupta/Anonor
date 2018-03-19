@@ -6,7 +6,10 @@ import com.addie.xcall.R;
 
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 
-public class TalkApplication extends Application {
+/**
+ * Required to apply font to the application
+ */
+public class xCallApp extends Application {
     @Override
     public void onCreate() {
         super.onCreate();

@@ -6,6 +6,9 @@ import android.net.NetworkInfo;
 
 import timber.log.Timber;
 
+/**
+ * Network helper functions
+ */
 public class NetworkUtil {
     public static int TYPE_WIFI = 1;
     public static int TYPE_MOBILE = 2;

@@ -37,7 +37,7 @@
             android:textSize="26sp"
             android:textStyle="bold"
             android:textAppearance="@style/Base.Widget.AppCompat.ActionBar.Solid"
-            android:text="No login required!" />
+            android:text="Get connected with random people!" />
 
         <Button
             android:id="@+id/sign_up_button"

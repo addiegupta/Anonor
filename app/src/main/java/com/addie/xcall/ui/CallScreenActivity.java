@@ -47,6 +47,9 @@ import butterknife.ButterKnife;
 import timber.log.Timber;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
+/**
+ * Displays the caller screen containing duration info, speakerphone, microphone and end call buttons
+ */
 public class CallScreenActivity extends BaseActivity implements SensorEventListener {
 
     private AudioPlayer mAudioPlayer;
@@ -174,6 +177,9 @@ public class CallScreenActivity extends BaseActivity implements SensorEventListe
 
     }
 
+    /**
+     * Fetches total call duration value of user from database
+     */
     private void getDurationInitialValue() {
 
         //Get duration value
@@ -191,6 +197,9 @@ public class CallScreenActivity extends BaseActivity implements SensorEventListe
 
     }
 
+    /**
+     * Handles a call if it is picked up or if it is to be created
+     */
     private void handleCall() {
         // Call picked up
         if (getIntent().hasExtra(CALLERID_DATA_KEY)) {
@@ -260,6 +269,10 @@ public class CallScreenActivity extends BaseActivity implements SensorEventListe
         }
     }
 
+    /**
+     * Creates a call back to the original caller
+     * @param callerId
+     */
     private void createCallOrTooLate(final String callerId) {
 
 
@@ -315,6 +328,10 @@ public class CallScreenActivity extends BaseActivity implements SensorEventListe
         }
     }
 
+    /**
+     *
+     * Creates a sinch call
+     */
     private void createCall() {
         try {
             Call call = getSinchServiceInterface().callUser(mOriginalCaller.substring(0, 25));
@@ -398,7 +415,7 @@ public class CallScreenActivity extends BaseActivity implements SensorEventListe
         if (call != null) {
             call.hangup();
         }
-        Intent postCallIntent = new Intent(CallScreenActivity.this, PostCallActivity.class);
+        Intent postCallIntent = new Intent(CallScreenActivity.this, FeedbackActivity.class);
         postCallIntent.putExtra(CALLERID_DATA_KEY, mOriginalCaller);
         if (mProximity != null) {
             mSensorManager.unregisterListener(this);

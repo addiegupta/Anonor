@@ -31,6 +31,9 @@ import butterknife.ButterKnife;
 import timber.log.Timber;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
+/**
+ * Main activity that allows user to call an anonymous user
+ */
 public class MainActivity extends BaseActivity implements SinchService.StartFailedListener {
 
 

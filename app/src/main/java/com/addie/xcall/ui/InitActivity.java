@@ -20,7 +20,10 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
-public class SignupActivity extends AppCompatActivity {
+/**
+ * Logs the user into database by saving its fcm token
+ */
+public class InitActivity extends AppCompatActivity {
     private static final String FCM_TOKEN = "fcm_token";
     private static final String SINCH_ID_KEY = "sinch_id";
 
@@ -38,7 +41,7 @@ public class SignupActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_sign_up);
+        setContentView(R.layout.activity_init);
 
         ButterKnife.bind(this);
 
@@ -51,7 +54,7 @@ public class SignupActivity extends AppCompatActivity {
 
         SharedPreferences prefs = getSharedPreferences(SHARED_PREFS_KEY, Context.MODE_PRIVATE);
         if (prefs.contains(FIRST_LOGIN)) {
-            startActivity(new Intent(SignupActivity.this, MainActivity.class));
+            startActivity(new Intent(InitActivity.this, MainActivity.class));
             finish();
         }
         if(prefs.contains(FCM_TOKEN)){
@@ -73,7 +76,7 @@ public class SignupActivity extends AppCompatActivity {
 
                 mDBRef.child("users").child(fcmToken).setValue(user);
                 prefs.edit().putString(SINCH_ID_KEY, fcmToken.substring(0, 25)).apply();
-                startActivity(new Intent(SignupActivity.this, MainActivity.class));
+                startActivity(new Intent(InitActivity.this, MainActivity.class));
                 finish();
             }
         });

@@ -21,6 +21,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import butterknife.ButterKnife;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
+/**
+ * Displayed while watiting for a user to pick up the initiated call
+ */
 public class WaitingCallActivity extends AppCompatActivity {
 
     private static final String CALL_REQUEST_KEY = "call_request";

@@ -1,6 +1,8 @@
 package com.addie.xcall.model;
 
-
+/**
+ * Class to store attributes of a post-call report to be submitted to the server
+ */
 public class Report {
 
     public String remoteUser;

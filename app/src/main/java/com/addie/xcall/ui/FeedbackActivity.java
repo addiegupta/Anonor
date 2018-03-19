@@ -26,7 +26,11 @@ import butterknife.ButterKnife;
 import timber.log.Timber;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
-public class PostCallActivity extends AppCompatActivity {
+
+/**
+ * Displayed after the call. Provides option to submit feedback
+ */
+public class FeedbackActivity extends AppCompatActivity {
 
     private static final String CALLERID_DATA_KEY = "callerId";
     private String mRemoteUser;
@@ -60,7 +64,7 @@ public class PostCallActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_post_call);
+        setContentView(R.layout.activity_feedback);
         ButterKnife.bind(this);
 
         IntentFilter filter = new IntentFilter();
@@ -96,7 +100,7 @@ public class PostCallActivity extends AppCompatActivity {
     }
 
     private void dismissActivity() {
-        startActivity(new Intent(PostCallActivity.this, MainActivity.class));
+        startActivity(new Intent(FeedbackActivity.this, MainActivity.class));
         finish();
     }
     protected void onResume() {
@@ -122,7 +126,7 @@ public class PostCallActivity extends AppCompatActivity {
 
                     if (mInternetDialog == null || !mInternetDialog.isShowing()) {
 
-                        AlertDialog.Builder builder = new AlertDialog.Builder(PostCallActivity.this);
+                        AlertDialog.Builder builder = new AlertDialog.Builder(FeedbackActivity.this);
                         builder.setTitle(R.string.no_internet)
                                 .setMessage("The app cannot function without an internet connection")
                                 .setCancelable(false)

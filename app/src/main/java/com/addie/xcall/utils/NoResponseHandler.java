@@ -8,6 +8,9 @@ import android.os.Looper;
 
 import com.addie.xcall.ui.NoResponseActivity;
 
+/**
+ * Handles lack of response
+ */
 public class NoResponseHandler {
 
     private static Handler mNoResponseHandler;

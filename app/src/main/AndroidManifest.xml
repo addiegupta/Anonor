@@ -23,7 +23,7 @@
         android:required="true" />
 
     <application
-        android:name="com.addie.xcall.ui.TalkApplication"
+        android:name="com.addie.xcall.ui.xCallApp"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -40,7 +40,7 @@
             android:name="com.addie.xcall.ui.BaseActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.addie.xcall.ui.SignupActivity"
+            android:name="com.addie.xcall.ui.InitActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -82,7 +82,7 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="com.addie.xcall.ui.PostCallActivity"
+            android:name="com.addie.xcall.ui.FeedbackActivity"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />

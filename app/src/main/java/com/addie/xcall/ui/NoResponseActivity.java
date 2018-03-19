@@ -23,6 +23,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
+/**
+ * Displayed if call is not picked up by anyone
+ */
 public class NoResponseActivity extends AppCompatActivity {
 
 
@@ -95,6 +98,9 @@ public class NoResponseActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * Creates an alertDialogReceiver for detecting internet problems
+     */
     private void createDialogReceiver() {
         IntentFilter filter = new IntentFilter();
         filter.addAction("ACTION_NO_INTERNET");

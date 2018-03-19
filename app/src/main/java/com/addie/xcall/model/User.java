@@ -1,5 +1,8 @@
 package com.addie.xcall.model;
 
+/**
+ * Class to store attributes of a user ( fcm token and call duration)
+ */
 public class User {
     private long duration;
     private String fcm_token;
