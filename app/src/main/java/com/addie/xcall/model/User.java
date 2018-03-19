@@ -3,6 +3,13 @@ package com.addie.xcall.model;
 public class User {
     private long duration;
     private String fcm_token;
+    private String call_request;
+
+    public User(long duration, String fcm_token, String call_request) {
+        this.duration = duration;
+        this.fcm_token = fcm_token;
+        this.call_request = call_request;
+    }
 
     public User(long duration, String fcm_token) {
 
@@ -14,7 +21,13 @@ public class User {
 
     }
 
+    public String isCall_request() {
+        return call_request;
+    }
 
+    public void setCall_request(String call_request) {
+        this.call_request = call_request;
+    }
 
     public long getDuration() {
         return this.duration;

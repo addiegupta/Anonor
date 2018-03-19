@@ -16,8 +16,8 @@
     <string name="cancel">Cancel</string>
     <string name="calling_people_message">Connecting to a random xCall user</string>
     <string name="call_disconnected">Call Disconnected</string>
-    <string name="post_call_report_message_pt1">Had any problems with the call?</string>
-    <string name="post_call_report_message_pt2">Tell us about it</string>
+    <string name="post_call_report_message_pt1">Problems with the call?</string>
+    <string name="post_call_report_message_pt2">Send your feedback</string>
     <string name="describe_your_problem">Describe your problem</string>
     <string name="submit_problem">Submit Problem</string>
     <string name="dismiss">Dismiss</string>
@@ -27,7 +27,7 @@
     <string name="mic_is_unmuted">Microphone Unmuted</string>
     <string name="speakerphone_on">Speakerphone On</string>
     <string name="speakerphone_off">Speakerphone Off</string>
-    <string name="problem_involving_caller">Does your problem involve the person you just talked to?</string>
+    <string name="problem_involving_caller">Problems with the caller?</string>
     <string name="connecting">connecting</string>
     <string name="connected">connected</string>
     <string name="sorry">sorry...</string>

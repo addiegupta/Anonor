@@ -5,36 +5,36 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_grey"
-    android:orientation="vertical">
+    android:background="@color/background_grey">
 
-    <include layout="@layout/toolbar_layout"/>
+    <include layout="@layout/toolbar_layout" />
 
 
     <TextView
+        android:id="@+id/tv_no_response_message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="@style/Base.Widget.AppCompat.ActionBar.Solid"
-        android:textStyle="bold"
-        android:layout_centerHorizontal="true"
-        android:textSize="32sp"
+        android:layout_centerInParent="true"
         android:layout_marginTop="32dp"
-        android:layout_alignParentTop="true"
-        android:id="@+id/tv_no_response_message"
+        android:gravity="center"
+        android:padding="16dp"
         android:text="@string/no_response_message"
-        android:padding="16dp" />
+        android:textAppearance="@style/Base.Widget.AppCompat.ActionBar.Solid"
+        android:textSize="34sp"
+        android:textStyle="bold" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab_no_response_call"
-        android:layout_width="96dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        app:fabSize="normal"
+        android:layout_alignParentBottom="true"
         android:layout_marginBottom="32dp"
-        android:layout_height="96dp"
         android:contentDescription="@string/try_again"
         android:scaleType="center"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        app:backgroundTint="@color/colorPrimary"
         android:src="@drawable/ic_phone_forwarded_white_24dp"
+        app:backgroundTint="@color/colorPrimary"
         app:rippleColor="@color/colorPrimaryDark" />
 
 

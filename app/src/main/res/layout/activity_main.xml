@@ -15,7 +15,7 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginLeft="64dp"
         android:layout_marginRight="64dp"
-        android:layout_marginTop="48dp"
+        android:layout_marginTop="32dp"
         android:layout_weight="2"
         android:src="@drawable/mask" />
 
@@ -25,9 +25,9 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginBottom="32dp"
-        android:layout_marginLeft="64dp"
+        android:layout_marginLeft="48dp"
         android:gravity="center_horizontal"
-        android:layout_marginRight="64dp"
+        android:layout_marginRight="48dp"
         android:layout_weight="1"
         android:text="@string/start_calling"
         android:textAppearance="@style/Base.Widget.AppCompat.ActionBar.Solid"
@@ -41,7 +41,7 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginBottom="32dp"
         app:backgroundTint="@color/colorPrimary"
-        android:src="@drawable/ic_phone_forwarded_white_24dp"
+        android:src="@drawable/ic_phone_forwarded_white_42dp"
         app:rippleColor="@color/colorPrimaryDark" />
 
 </LinearLayout>

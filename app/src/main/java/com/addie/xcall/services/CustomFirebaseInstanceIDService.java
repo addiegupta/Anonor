@@ -1,6 +1,7 @@
 package com.addie.xcall.services;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
 
@@ -26,5 +27,7 @@ public class CustomFirebaseInstanceIDService extends FirebaseInstanceIdService {
         Log.d("CFCMIIDS","Token refreshed");
         SharedPreferences prefs = getSharedPreferences(SHARED_PREFS_KEY, Context.MODE_PRIVATE);
         prefs.edit().putString(FCM_TOKEN,refreshedToken).apply();
+        Intent intent = new Intent("com.addie.xcall.token");
+        sendBroadcast(intent);
     }
 }

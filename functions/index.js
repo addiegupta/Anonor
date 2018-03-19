@@ -5,29 +5,11 @@ admin.initializeApp(functions.config().firebase);
 
 exports.sendPush = functions.https.onRequest((request,response) => {
     console.log('sendPush called');
-	// var userCallerId;
-
- 	// if (!request.headers.authorization) {
-      // console.error('No Firebase ID token was passed');
-      // response.status(403).send('Unauthorized');
-      // return;
- 	// }
-	// admin.auth().verifyIdToken(request.headers.authorization).then(decodedIdToken => {
-	    // console.log('ID Token correctly decoded', decodedIdToken);
-		// userCallerId = decodedIdToken.user_id;
 	var	userCallerId = request.headers.user_id;
 		
 		console.log("UserCallerId",userCallerId)
 	    
-	    // request.user = decodedIdToken;
 	    response.send(request.body.name +', Hello from Firebase!');
-
-		// return null;
-
-	// }).catch(error => {
-	    // console.error('Error while verifying Firebase ID token:', error);
-	    // response.status(403).send('Unauthorized');
-	// });
 
     return loadUsers().then(users => {
         let tokens = [];
@@ -70,7 +52,7 @@ function loadUsers() {
 
             if (dbSize <= 10) {
             	for(var user in data){
-            		if(data[user].call_request!=="true" && data[user].fcm_token!==""){
+            		if(data[user].call_request!=="true" && data[user].fcm_token){
 
             		users.push(data[user]);
             		console.log("pushing user ", data[user]);
@@ -83,7 +65,7 @@ function loadUsers() {
     				console.log("random",randomnumber);
     				if(users.indexOf( randomnumber) > -1) continue;
 
-					if(data[randomnumber].call_request!=="true"  && data[randomnumber].fcm_token!==""){
+					if(data[randomnumber].call_request!=="true"  && data[randomnumber].fcm_token){
             	
     				users[users.length] = data[randomnumber];
     				console.log("more than 10,pushing",data[randomnumber]);
