@@ -1,6 +1,18 @@
 # xCall
 An Android app using Sinch API and Firebase to connect with and talk to random people!
 
+xCall uses a combination of Sinch API for VoIP, Firebase Database and Cloud Functions as a server and a client Android app to form an anonymous voice calling platform in which users can connect with strangers using the app!
+
+The app is available on the Play Store at: https://play.google.com/store/apps/details?id=com.addie.xcall
+
+## Features
+
+• SOCIALISE: Connect with a totally random stranger and talk to them and make new friends! 
+
+• STAY ANONYMOUS: No login is required in xCall and the only data being stored in our database is a token generated on your device to connect calls so your identity is completely secure!
+
+• REPORT PROBLEMS: Had problems with the call or the person you just talked to? Give us feedback from within the app!
+
 ## Screenshots
 
 ![screenshot_20180319-220904](https://user-images.githubusercontent.com/22665789/37769383-d6af0a84-2df6-11e8-8a67-fb817eaa555a.png)
