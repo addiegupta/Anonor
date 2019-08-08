@@ -140,7 +140,7 @@ public class WaitingCallActivity extends AppCompatActivity {
     public void onBackPressed() {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(WaitingCallActivity.this);
-        builder.setTitle(R.string.no_internet)
+        builder.setTitle(R.string.cancel_call)
                 .setMessage("The call process will be terminated")
                 .setCancelable(true)
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {

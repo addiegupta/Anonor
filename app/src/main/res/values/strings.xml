@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">xCall</string>
+    <string name="app_name">Anonor</string>
 
     <!-- Strings related to login (Added most probably by Firebase)-->
 
@@ -14,7 +14,7 @@
     <string name="caller">Caller</string>
     <string name="receiver">Receiver</string>
     <string name="cancel">Cancel</string>
-    <string name="calling_people_message">Connecting to a random xCall user</string>
+    <string name="calling_people_message">Connecting to a random Anonor user</string>
     <string name="call_disconnected">Call Disconnected</string>
     <string name="post_call_report_message_pt1">Problems with the call?</string>
     <string name="post_call_report_message_pt2">Send your feedback</string>
@@ -35,5 +35,6 @@
     <string name="caller_lowercase">caller</string>
     <string name="receiver_lowercase">receiver</string>
     <string name="start_calling">Call an anonymous person now!</string>
+    <string name="cancel_call">Cancel call?</string>
 
 </resources>
